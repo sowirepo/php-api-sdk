@@ -1,0 +1,56 @@
+{
+    "name": "sowiso/php-api-sdk",
+    "description": "A SOWISO PHP library that wraps the API",
+    "keywords": [
+        "sowiso",
+        "sdk"
+    ],
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "SOWISO",
+            "email": "dev@sowiso.com",
+            "homepage": "https://www.sowiso.com/"
+        }
+    ],
+    "scripts": {
+        "lint": "vendor/bin/php-cs-fixer fix -v",
+        "test:lint": "vendor/bin/php-cs-fixer fix -v --dry-run",
+        "test:types": "vendor/bin/phpstan analyse -c phpstan.neon --ansi --memory-limit=-1 --debug",
+        "test:unit": "vendor/bin/pest --colors=always",
+        "test": [
+            "@test:lint",
+            "@test:types",
+            "@test:unit"
+        ]
+    },
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.11",
+        "pestphp/pest": "^1.22",
+        "phpstan/phpstan": "^1.8",
+        "phpstan/phpstan-strict-rules": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "Sowiso\\SDK\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Sowiso\\SDK\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
+}
