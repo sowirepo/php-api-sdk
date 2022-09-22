@@ -21,5 +21,6 @@ return $config
         'no_unused_imports' => true,
         'declare_strict_types' => true,
         'fully_qualified_strict_types' => true,
+        'cast_spaces' => ['space' => 'single'],
     ])
     ->setFinder($finder);

@@ -2,6 +2,15 @@
 
 declare(strict_types=1);
 
+use Http\Client\HttpClient;
+use Http\Message\RequestMatcher\RequestMatcher;
+use Http\Mock\Client;
+use Nyholm\Psr7\Stream;
+use Psr\Http\Message\ResponseInterface;
+use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiConfiguration;
+use Sowiso\SDK\SowisoApiContext;
+
 /*
 |--------------------------------------------------------------------------
 | Test Case
@@ -26,10 +35,6 @@ declare(strict_types=1);
 |
 */
 
-expect()->extend('toBeOne', function () {
-    return $this->toBe(1);
-});
-
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -41,7 +46,42 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function api(
+    ?string $baseUrl = null,
+    ?string $apiKey = null,
+): SowisoApi {
+    return new SowisoApi(
+        configuration: configuration($baseUrl, $apiKey),
+    );
+}
+
+function configuration(
+    ?string $baseUrl = null,
+    ?string $apiKey = null,
+): SowisoApiConfiguration {
+    $baseUrl ??= "http://test.sowiso.local";
+    $apiKey ??= "ABC123";
+
+    return SowisoApiConfiguration::create($baseUrl, $apiKey);
+}
+
+function context(): SowisoApiContext
 {
-    // ..
+    return SowisoApiContext::create();
+}
+
+function mockHttpClient(
+    string $path,
+    array $response,
+    int $statusCode = 200,
+): HttpClient {
+    $response = mock(ResponseInterface::class)->expect(
+        getStatusCode: fn () => $statusCode,
+        getBody: fn () => Stream::create(json_encode($response)),
+    );
+
+    $client = new Client();
+    $client->on(new RequestMatcher($path), $response);
+
+    return $client;
 }
