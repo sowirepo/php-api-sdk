@@ -17,7 +17,7 @@ it('accepts a configuration', function () {
     $configuration = configuration();
 
     expect(new SowisoApi(configuration: $configuration))
-        ->getConfiguration()->toEqual($configuration);
+        ->getConfiguration()->toBe($configuration);
 });
 
 it('accepts PSR-17 and PSR-18 implementations', function () {
@@ -85,13 +85,13 @@ it('runs endpoint callbacks correctly', function (string $class, array $data) {
 ]);
 
 it('fails when no base url is set', function () {
-    api(baseUrl: "");
+    api(baseUrl: "")->request(context(), "{}");
 })->throws(NoBaseUrlException::class);
 
 it('fails when an invalid base url is set', function () {
-    api(baseUrl: "ABC");
+    api(baseUrl: "ABC")->request(context(), "{}");
 })->throws(InvalidBaseUrlException::class);
 
 it('fails when no API key is set', function () {
-    api(apiKey: "");
+    api(apiKey: "")->request(context(), "{}");
 })->throws(NoApiKeyException::class);

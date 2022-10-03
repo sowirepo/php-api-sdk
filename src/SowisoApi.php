@@ -32,16 +32,12 @@ class SowisoApi
     /** @var array<class-string<EndpointInterface>, array<CallbackInterface>> */
     private array $callbacks = [];
 
-    /**
-     * @throws SowisoApiException
-     */
     public function __construct(
         private SowisoApiConfiguration $configuration,
         private ?ClientInterface $httpClient = null,
         private ?RequestFactoryInterface $httpRequestFactory = null,
         private ?StreamFactoryInterface $httpStreamFactory = null,
     ) {
-        $this->configuration->validate();
     }
 
     public function useCallback(CallbackInterface $callback): self
@@ -64,6 +60,8 @@ class SowisoApi
         } catch (JsonException $e) {
             throw new InvalidJsonDataException($e);
         }
+
+        $this->configuration->validate();
 
         $endpoint = $this->resolveEndpoint($json);
 
