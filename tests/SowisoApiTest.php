@@ -9,8 +9,11 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Exceptions\InvalidBaseUrlException;
+use Sowiso\SDK\Exceptions\InvalidEndpointException;
+use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
+use Sowiso\SDK\Exceptions\NoEndpointException;
 use Sowiso\SDK\SowisoApi;
 
 it('accepts a configuration', function () {
@@ -95,3 +98,19 @@ it('fails when an invalid base url is set', function () {
 it('fails when no API key is set', function () {
     api(apiKey: "")->request(context(), "{}");
 })->throws(NoApiKeyException::class);
+
+it('fails with no JSON data', function () {
+    api()->request(context(), "");
+})->throws(InvalidJsonDataException::class);
+
+it('fails with invalid JSON data', function () {
+    api()->request(context(), "{ / }");
+})->throws(InvalidJsonDataException::class);
+
+it('fails with no endpoint', function () {
+    api()->request(context(), "{}");
+})->throws(NoEndpointException::class);
+
+it('fails with invalid endpoint', function () {
+    api()->request(context(), json_encode(['__endpoint' => 'XYZ']));
+})->throws(InvalidEndpointException::class);
