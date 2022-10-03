@@ -12,7 +12,9 @@ use Sowiso\SDK\SowisoApiContext;
 
 class EvaluateAnswerResponse extends AbstractResponse
 {
-    private int $tryId;
+    private bool $completed;
+
+    private float $score;
 
     /**
      * @param array<string, mixed> $data
@@ -22,15 +24,25 @@ class EvaluateAnswerResponse extends AbstractResponse
     {
         parent::__construct($context, $data, $request);
 
-        if (null === ($tryId = $data['tryId'] ?? null) || !is_int($tryId)) {
-            throw MissingDataException::create(self::class, 'tryId');
+        if (null === ($completed = $data['exercise_evaluation']['completed'] ?? null) || !is_bool($completed)) {
+            throw MissingDataException::create(self::class, 'completed');
         }
 
-        $this->tryId = $tryId;
+        if (null === ($score = $data['exercise_evaluation']['score'] ?? null) || !is_float($score)) {
+            throw MissingDataException::create(self::class, 'score');
+        }
+
+        $this->completed = $completed;
+        $this->score = $score;
     }
 
-    public function getTryId(): int
+    public function isCompleted(): bool
     {
-        return $this->tryId;
+        return $this->completed;
+    }
+
+    public function getScore(): float
+    {
+        return $this->score;
     }
 }

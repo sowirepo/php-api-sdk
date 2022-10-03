@@ -49,12 +49,12 @@ it('automatically discovers PSR-17 and PSR-18 implementations', function () {
         ->getHttpStreamFactory()->toBeInstanceOf(Psr17Factory::class);
 });
 
-it('runs endpoint callbacks correctly', function (string $class, array $data) {
+it('runs endpoint callbacks correctly', function (string $class, string $path, array $request, array $response) {
     $api = new SowisoApi(
         configuration: configuration(),
         httpClient: mockHttpClient(
-            path: '/test',
-            response: ['tryId' => 123],
+            path: $path,
+            response: $response,
         ),
     );
 
@@ -81,10 +81,20 @@ it('runs endpoint callbacks correctly', function (string $class, array $data) {
 
     $api->useCallback($callback);
 
-    $api->request($context, json_encode($data));
+    $api->request($context, json_encode($request));
 })->with([
-    [PlayExerciseSetCallback::class, ['__endpoint' => 'play/set']],
-    [EvaluateAnswerCallback::class, ['__endpoint' => 'evaluate/answer']],
+    [
+        PlayExerciseSetCallback::class,
+        '/test', // TODO
+        ['__endpoint' => 'play/set'], // TODO
+        [], // TODO
+    ],
+    [
+        EvaluateAnswerCallback::class,
+        '/api/evaluate/answer/try_id/1/view/student',
+        ['__endpoint' => 'evaluate/answer', 'try_id' => 1],
+        ['exercise_evaluation' => ['completed' => true, 'score' => 9.9]],
+    ],
 ]);
 
 it('fails when no base url is set', function () {

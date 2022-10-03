@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Exceptions;
 
 use InvalidArgumentException;
+use ReflectionClass;
+use ReflectionException;
 
 final class MissingDataException extends InvalidArgumentException implements SowisoApiException
 {
@@ -18,7 +20,13 @@ final class MissingDataException extends InvalidArgumentException implements Sow
      */
     public static function create(string $class, string $field): MissingDataException
     {
-        return new MissingDataException(sprintf('%s::%s', $class, $field));
+        try {
+            $className = (new ReflectionClass($class))->getShortName();
+        } catch (ReflectionException) {
+            $className = $class;
+        }
+
+        return new MissingDataException(sprintf('%s::%s', $className, $field));
     }
 
     public function getField(): string

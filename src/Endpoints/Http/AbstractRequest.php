@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Endpoints\Http;
 
+use JsonException;
+use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\SowisoApiContext;
 
 abstract class AbstractRequest implements RequestInterface
@@ -19,11 +21,29 @@ abstract class AbstractRequest implements RequestInterface
 
     public function getMethod(): string
     {
-        return "GET";
+        return 'GET';
     }
 
     public function getBody(): ?string
     {
         return null;
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     */
+    protected function makeBody(array $data): ?string
+    {
+        try {
+            $data = array_filter($data, fn($key) => str_starts_with($key, '__'), ARRAY_FILTER_USE_KEY);
+
+            if (false === $body = json_encode($data, flags: JSON_THROW_ON_ERROR)) {
+                return null;
+            }
+
+            return $body;
+        } catch (JsonException $e) {
+            throw new InvalidJsonDataException($e);
+        }
     }
 }

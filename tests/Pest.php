@@ -76,8 +76,8 @@ function mockHttpClient(
     int $statusCode = 200,
 ): HttpClient {
     $response = mock(ResponseInterface::class)->expect(
-        getStatusCode: fn () => $statusCode,
-        getBody: fn () => Stream::create(json_encode($response)),
+        getStatusCode: fn() => $statusCode,
+        getBody: fn() => Stream::create(json_encode($response)),
     );
 
     $client = new Client();
