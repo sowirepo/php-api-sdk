@@ -8,11 +8,11 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
 
 class EvaluateAnswer
 {
-    public const Uri = '/api/evaluate/answer/try_id/1/view/student';
+    public const Uri = '/api/evaluate/answer/try_id/12345/view/student';
 
     public const Request = [
         '__endpoint' => EvaluateAnswerEndpoint::NAME,
-        'try_id' => 1,
+        'try_id' => 12345,
     ];
 
     public const Response = [

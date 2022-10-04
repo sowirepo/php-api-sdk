@@ -35,9 +35,9 @@ abstract class AbstractRequest implements RequestInterface
     protected function makeBody(array $data): ?string
     {
         try {
-            $data = array_filter($data, fn($key) => str_starts_with($key, '__'), ARRAY_FILTER_USE_KEY);
+            $data = array_filter($data, fn($key) => !str_starts_with($key, '__'), ARRAY_FILTER_USE_KEY);
 
-            if (false === $body = json_encode($data, flags: JSON_THROW_ON_ERROR)) {
+            if (!is_string($body = json_encode($data, flags: JSON_THROW_ON_ERROR))) {
                 return null;
             }
 

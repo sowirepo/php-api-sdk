@@ -8,6 +8,8 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Endpoints\Http\RequestInterface;
+use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\SowisoApiContext;
 
@@ -28,7 +30,7 @@ interface EndpointInterface
     public function withHttpStreamFactory(StreamFactoryInterface $httpStreamFactory): self;
 
     /**
-     * @param array<CallbackInterface> $callbacks
+     * @param array<CallbackInterface<RequestInterface, ResponseInterface>> $callbacks
      */
     public function withCallbacks(array $callbacks): self;
 }

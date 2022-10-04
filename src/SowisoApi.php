@@ -16,6 +16,8 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\EndpointInterface;
+use Sowiso\SDK\Endpoints\Http\RequestInterface;
+use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
@@ -29,7 +31,7 @@ class SowisoApi
         PlayExerciseSetEndpoint::NAME => PlayExerciseSetEndpoint::class,
     ];
 
-    /** @var array<class-string<EndpointInterface>, array<CallbackInterface>> */
+    /** @var array<class-string<EndpointInterface>, array<CallbackInterface<RequestInterface, ResponseInterface>>> */
     private array $callbacks = [];
 
     public function __construct(
@@ -40,6 +42,10 @@ class SowisoApi
     ) {
     }
 
+    /**
+     * @param CallbackInterface<RequestInterface, ResponseInterface> $callback
+     * @return SowisoApi
+     */
     public function useCallback(CallbackInterface $callback): self
     {
         $endpoint = $callback->endpoint();

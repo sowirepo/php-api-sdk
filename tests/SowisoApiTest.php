@@ -6,8 +6,12 @@ use Mockery\Mock;
 use Mockery\MockInterface;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
+use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
+use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Endpoints\Http\RequestInterface;
+use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidBaseUrlException;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
@@ -15,6 +19,7 @@ use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
 use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 
 it('accepts a configuration', function () {
     $configuration = configuration();
@@ -50,8 +55,7 @@ it('automatically discovers PSR-17 and PSR-18 implementations', function () {
 });
 
 it('runs endpoint callbacks correctly', function (string $class, string $path, array $request, array $response) {
-    $api = new SowisoApi(
-        configuration: configuration(),
+    $api = api(
         httpClient: mockHttpClient(
             path: $path,
             response: $response,
@@ -60,7 +64,7 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
 
     $context = context();
 
-    /** @var Mock|MockInterface&CallbackInterface $callback */
+    /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($class)
         ->makePartial();
 
@@ -83,17 +87,17 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
 
     $api->request($context, json_encode($request));
 })->with([
-    [
+    PlayExerciseSetEndpoint::NAME => [
         PlayExerciseSetCallback::class,
         '/test', // TODO
         ['__endpoint' => 'play/set'], // TODO
         [], // TODO
     ],
-    [
+    EvaluateAnswerEndpoint::NAME => [
         EvaluateAnswerCallback::class,
-        '/api/evaluate/answer/try_id/1/view/student',
-        ['__endpoint' => 'evaluate/answer', 'try_id' => 1],
-        ['exercise_evaluation' => ['completed' => true, 'score' => 9.9]],
+        EvaluateAnswer::Uri,
+        EvaluateAnswer::Request,
+        EvaluateAnswer::Response,
     ],
 ]);
 

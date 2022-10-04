@@ -28,7 +28,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     protected RequestFactoryInterface $httpRequestFactory;
     protected StreamFactoryInterface $httpStreamFactory;
 
-    /** @var array<CallbackInterface> */
+    /** @var array<CallbackInterface<RequestInterface, ResponseInterface>> */
     protected array $callbacks;
 
     public function __construct()
@@ -43,14 +43,16 @@ abstract class AbstractEndpoint implements EndpointInterface
     {
         try {
             $request = $this->createRequest($context, $data);
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->onRequest($context, $request));
+            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->request($context, $request));
+
+            $uri = $this->configuration->getBaseUrl() . $request->getUri();
 
             $httpRequest = $this->httpRequestFactory
-                ->createRequest($request->getMethod(), $request->getUri())
+                ->createRequest($request->getMethod(), $uri)
                 ->withHeader(SowisoApiConfiguration::API_KEY_HEADER, $this->configuration->getApiKey());
 
             if (null !== $body = $request->getBody()) {
-                $httpRequest
+                $httpRequest = $httpRequest
                     ->withHeader('Content-Type', 'application/json')
                     ->withBody($this->httpStreamFactory->createStream($body));
             }
@@ -78,9 +80,9 @@ abstract class AbstractEndpoint implements EndpointInterface
             }
 
             $response = $this->createResponse($context, $fetchedData, $request);
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->onResponse($context, $response));
+            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->response($context, $response));
         } catch (SowisoApiException|JsonException|ClientExceptionInterface|Exception $e) {
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->onFailure($context));
+            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->failure($context, $e));
 
             if ($e instanceof SowisoApiException) {
                 throw $e;
@@ -91,7 +93,7 @@ abstract class AbstractEndpoint implements EndpointInterface
             throw new FetchingFailedException($e);
         }
 
-        $this->runCallbacks(fn(CallbackInterface $callback) => $callback->onSuccess($context, $request, $response));
+        $this->runCallbacks(fn(CallbackInterface $callback) => $callback->success($context, $request, $response));
 
         return [];
     }
@@ -143,6 +145,9 @@ abstract class AbstractEndpoint implements EndpointInterface
         return $this;
     }
 
+    /**
+     * @param array<CallbackInterface<RequestInterface, ResponseInterface>> $callbacks
+     */
     public function withCallbacks(array $callbacks): self
     {
         $this->callbacks = $callbacks;
@@ -151,7 +156,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     }
 
     /**
-     * @param callable(CallbackInterface): void $run
+     * @param callable(CallbackInterface<RequestInterface, ResponseInterface>): void $run
      */
     private function runCallbacks(callable $run): void
     {

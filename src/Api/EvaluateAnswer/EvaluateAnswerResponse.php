@@ -24,11 +24,14 @@ class EvaluateAnswerResponse extends AbstractResponse
     {
         parent::__construct($context, $data, $request);
 
-        if (null === ($completed = $data['exercise_evaluation']['completed'] ?? null) || !is_bool($completed)) {
+        /** @var array<string, mixed> $exerciseEvaluation */
+        $exerciseEvaluation = $data['exercise_evaluation'] ?? [];
+
+        if (null === ($completed = $exerciseEvaluation['completed'] ?? null) || !is_bool($completed)) {
             throw MissingDataException::create(self::class, 'completed');
         }
 
-        if (null === ($score = $data['exercise_evaluation']['score'] ?? null) || !is_float($score)) {
+        if (null === ($score = $exerciseEvaluation['score'] ?? null) || !is_float($score)) {
             throw MissingDataException::create(self::class, 'score');
         }
 
