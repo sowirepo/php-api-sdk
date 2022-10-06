@@ -31,17 +31,20 @@ class PlayExerciseSetRequest extends AbstractRequest
     {
         parent::__construct($context, $data);
 
-        if (null === ($username = $context->getUsername()) || empty($username)) {
+        if (null === ($username = $context->getUsername()) || trim($username) === '') {
             throw new NoUserException();
         }
+
+        $language = is_string($language = $data['lang'] ?? null) ? $language : null;
+        $view = is_string($view = $data['view'] ?? null) ? $view : null;
 
         if (null === ($setId = $data['set_id'] ?? null) || !is_int($setId)) {
             throw MissingDataException::create(self::class, 'setId');
         }
 
         $this->username = $username;
-        $this->language = $data['lang'] ?? null;
-        $this->view = $data['view'] ?? null;
+        $this->language = $language;
+        $this->view = $view;
         $this->setId = $setId;
     }
 

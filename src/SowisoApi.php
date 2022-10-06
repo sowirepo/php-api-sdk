@@ -62,7 +62,7 @@ class SowisoApi
     public function request(SowisoApiContext $context, string $data): string
     {
         try {
-            $json = (array)json_decode($data, associative: true, flags: JSON_THROW_ON_ERROR);
+            $json = (array) json_decode($data, associative: true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
             throw new InvalidJsonDataException($e);
         }

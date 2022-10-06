@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Api\PlayExerciseSet;
 
 use Sowiso\SDK\Endpoints\Http\AbstractResponse;
+use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
@@ -18,27 +19,25 @@ class PlayExerciseSetResponse extends AbstractResponse
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    public function __construct(SowisoApiContext $context, array $data, PlayExerciseSetRequest $request)
+    public function __construct(SowisoApiContext $context, array $data, RequestInterface $request)
     {
         parent::__construct($context, $data, $request);
 
-        $this->exerciseTries = array_values(
-            array_filter(array_map(fn(array $item) => $this->parseExerciseTry($item), $data))
-        );
+        $exerciseTries = $this->parseExerciseTries();
 
-        usort($this->exerciseTries, fn(array $lhs, array $rhs) => $lhs['tryId'] <=> $rhs['tryId']);
-
-        foreach ($this->exerciseTries as $exerciseTry) {
-            if ($exerciseTry === null) {
-                throw MissingDataException::create(self::class, 'exerciseTries');
-            }
-        }
+        usort($exerciseTries, fn (array $lhs, array $rhs) => $lhs['tryId'] <=> $rhs['tryId']);
 
         // In readonly view, the exerciseTries array should be empty.
         // However, in non-readonly view, an exception should be thrown when the exerciseTries array isn't complete.
-        if (!$request->isReadonlyView() && count($this->exerciseTries) !== count($data)) {
+        $hasInvalidExerciseTries = $request instanceof PlayExerciseSetRequest
+            && !$request->isReadonlyView()
+            && count($exerciseTries) !== count($data);
+
+        if ($hasInvalidExerciseTries) {
             throw MissingDataException::create(self::class, 'exerciseTries');
         }
+
+        $this->exerciseTries = $exerciseTries;
     }
 
     /**
@@ -47,6 +46,23 @@ class PlayExerciseSetResponse extends AbstractResponse
     public function getExerciseTries(): array
     {
         return $this->exerciseTries;
+    }
+
+    /**
+     * @return array<int, array{exerciseId: int, tryId: int}>
+     */
+    public function parseExerciseTries(): array
+    {
+        $exerciseTries = [];
+
+        /** @var array<string, mixed> $item */
+        foreach ($this->data as $item) {
+            if (null !== $exerciseTry = $this->parseExerciseTry($item)) {
+                $exerciseTries[] = $exerciseTry;
+            }
+        }
+
+        return $exerciseTries;
     }
 
     /**
@@ -67,8 +83,8 @@ class PlayExerciseSetResponse extends AbstractResponse
         }
 
         return [
-            'exerciseId' => (int)$exerciseId,
-            'tryId' => (int)$tryId,
+            'exerciseId' => intval($exerciseId),
+            'tryId' => intval($tryId),
         ];
     }
 }

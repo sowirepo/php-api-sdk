@@ -57,11 +57,11 @@ it('runs all callback methods correctly', function () {
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
             expect($response->getExerciseTries())->sequence(
-                fn($value) => $value->toMatchArray([
+                fn ($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[0]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[0]['try_id'],
                 ]),
-                fn($value) => $value->toMatchArray([
+                fn ($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[1]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[1]['try_id'],
                 ]),
