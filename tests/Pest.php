@@ -49,20 +49,21 @@ expect()->extend('toBeApiRequest', function (
     ?string $method = null,
     ?string $apiKey = null,
 ) {
-    $method ??= 'GET';
-    $apiKey ??= 'ABC123';
+    $method ??= 'GET'; // TODO
+    $apiKey ??= 'ABC123'; // TODO
 
     /** @var Expectation|RequestInterface $request */
     $request = $this
         ->toBeInstanceOf(RequestInterface::class);
 
-    return $request
+    $request
         ->getUri()->getScheme()->toBe('http') // TODO
         ->getUri()->getHost()->toBe('test.sowiso.local') // TODO
         ->getUri()->getPath()->toBe($path)
         ->getMethod()->toBe($method)
-        ->getHeader('Content-Type')->toBe(['application/json'])
         ->getHeader('X-API-KEY')->toBe([$apiKey]);
+
+    return $this;
 });
 
 /*
@@ -91,8 +92,8 @@ function configuration(
     ?string $baseUrl = null,
     ?string $apiKey = null,
 ): SowisoApiConfiguration {
-    $baseUrl ??= 'http://test.sowiso.local';
-    $apiKey ??= 'ABC123';
+    $baseUrl ??= 'http://test.sowiso.local'; // TODO
+    $apiKey ??= 'ABC123'; // TODO
 
     return SowisoApiConfiguration::create($baseUrl, $apiKey);
 }
@@ -137,6 +138,7 @@ function capture(callable $dispatch): Closure
  * @param string $uri
  * @param array $request
  * @param array $response
+ * @param SowisoApiContext|null $context
  * @return void
  * @throws SowisoApiException
  */
@@ -145,18 +147,25 @@ function makesRequestCorrectly(
     string $uri,
     array $request,
     mixed $response,
+    ?SowisoApiContext $context = null,
 ): void {
+    $context ??= context();
+
     /** @var Client $client */
     $client = mockHttpClient(path: $uri, response: $response);
 
-    api(httpClient: $client)->request(context(), json_encode($request));
+    api(httpClient: $client)->request($context, json_encode($request));
 
     $httpRequest = $client->getLastRequest();
 
     expect($httpRequest)
         ->toBeApiRequest($uri, $method)
-        ->and((string)$httpRequest->getBody())
-        ->not()->toContain('__endpoint');
+        ->when(
+            $httpRequest->getMethod() === 'POST',
+            fn($httpRequest) => $httpRequest
+                ->getHeader('Content-Type')->toBe(['application/json'])
+                ->getBody()->__toString()->not()->toContain('__endpoint')
+        );
 }
 
 /**
@@ -166,6 +175,7 @@ function makesRequestCorrectly(
  * @param class-string $callbackName
  * @param callable(RequestInterface): void $requestCaptor
  * @param callable(ResponseInterface): void $responseCaptor
+ * @param SowisoApiContext|null $context
  * @throws SowisoApiException
  */
 function runsAllCallbackMethodsCorrectly(
@@ -175,10 +185,11 @@ function runsAllCallbackMethodsCorrectly(
     string $callbackName,
     callable $requestCaptor,
     callable $responseCaptor,
+    ?SowisoApiContext $context = null,
 ): void {
     $api = api(httpClient: mockHttpClient(path: $uri, response: $response));
 
-    $context = context();
+    $context ??= context();
 
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
@@ -209,15 +220,17 @@ function runsAllCallbackMethodsCorrectly(
 /**
  * @param array $request
  * @param class-string $callbackName
+ * @param SowisoApiContext|null $context
  * @throws SowisoApiException
  */
 function runsOnFailureCallbackMethodCorrectlyOnMissingData(
     array $request,
     string $callbackName,
+    ?SowisoApiContext $context = null,
 ): void {
     $api = api();
 
-    $context = context();
+    $context ??= context();
 
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
@@ -247,6 +260,7 @@ function runsOnFailureCallbackMethodCorrectlyOnMissingData(
  * @param array $response
  * @param class-string $callbackName
  * @param class-string $exceptionName
+ * @param SowisoApiContext|null $context
  * @throws SowisoApiException
  */
 function runsOnFailureCallbackMethodCorrectlyOnException(
@@ -255,10 +269,11 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
     mixed $response,
     string $callbackName,
     string $exceptionName,
+    ?SowisoApiContext $context = null,
 ): void {
     $api = api(httpClient: mockHttpClient(path: $uri, response: $response));
 
-    $context = context();
+    $context ??= context();
 
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
@@ -293,8 +308,11 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
 function failsOnMissingRequestData(
     array $request,
     string $missingFieldName,
+    ?SowisoApiContext $context = null,
 ): void {
-    expect(fn() => api()->request(context(), json_encode($request)))
+    $context ??= context();
+
+    expect(fn() => api()->request($context, json_encode($request)))
         ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }
 
@@ -303,6 +321,7 @@ function failsOnMissingRequestData(
  * @param array $request
  * @param array $response
  * @param string $missingFieldName
+ * @param SowisoApiContext|null $context
  * @throws SowisoApiException
  */
 function failsOnMissingResponseData(
@@ -310,9 +329,12 @@ function failsOnMissingResponseData(
     array $request,
     mixed $response,
     string $missingFieldName,
+    ?SowisoApiContext $context = null,
 ): void {
     $api = api(httpClient: mockHttpClient(path: $uri, response: $response));
 
-    expect(fn() => $api->request(context(), json_encode($request)))
+    $context ??= context();
+
+    expect(fn() => $api->request($context, json_encode($request)))
         ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }

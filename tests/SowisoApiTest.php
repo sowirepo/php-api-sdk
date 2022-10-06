@@ -19,7 +19,9 @@ use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
 use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiContext;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
+use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
 it('accepts a configuration', function () {
     $configuration = configuration();
@@ -62,7 +64,7 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
         ),
     );
 
-    $context = context();
+    $context = SowisoApiContext::create(username: 'user1');
 
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($class)
@@ -89,9 +91,9 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
 })->with([
     PlayExerciseSetEndpoint::NAME => [
         PlayExerciseSetCallback::class,
-        '/test', // TODO
-        ['__endpoint' => 'play/set'], // TODO
-        [], // TODO
+        PlayExerciseSet::Uri,
+        PlayExerciseSet::Request,
+        PlayExerciseSet::Response,
     ],
     EvaluateAnswerEndpoint::NAME => [
         EvaluateAnswerCallback::class,

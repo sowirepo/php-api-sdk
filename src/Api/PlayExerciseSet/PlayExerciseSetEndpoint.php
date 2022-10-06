@@ -25,6 +25,6 @@ class PlayExerciseSetEndpoint extends AbstractEndpoint
         array $data,
         RequestInterface $request,
     ): ResponseInterface {
-        return new PlayExerciseSetResponse($context, $data, $request);
+        return new PlayExerciseSetResponse($context, $data, (fn($it): PlayExerciseSetRequest => $it)($request));
     }
 }
