@@ -121,8 +121,8 @@ function mockHttpClient(array $responses): HttpClient
         $client->on(
             requestMatcher: new RequestMatcher($response['path']),
             result: mock(ResponseInterface::class)->expect(
-                getStatusCode: fn() => $response['statusCode'] ?? 200,
-                getBody: fn() => Stream::create(json_encode($response['body'])),
+                getStatusCode: fn () => $response['statusCode'] ?? 200,
+                getBody: fn () => Stream::create(json_encode($response['body'])),
             )
         );
     }
@@ -175,7 +175,7 @@ function makesRequestCorrectly(
         ->toBeApiRequest($uri, $method)
         ->when(
             $httpRequest->getMethod() === 'POST',
-            fn($httpRequest) => $httpRequest
+            fn ($httpRequest) => $httpRequest
                 ->getHeader('Content-Type')->toBe(['application/json'])
                 ->getBody()->__toString()->not()->toContain('__endpoint')
         );
@@ -267,7 +267,7 @@ function runsOnFailureCallbackMethodCorrectlyOnMissingData(
 
     $api->useCallback($callback);
 
-    expect(fn() => $api->request($context, json_encode($request)))
+    expect(fn () => $api->request($context, json_encode($request)))
         ->toThrow(MissingDataException::class);
 }
 
@@ -317,7 +317,7 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
 
     $api->useCallback($callback);
 
-    expect(fn() => $api->request($context, json_encode($request)))
+    expect(fn () => $api->request($context, json_encode($request)))
         ->toThrow($exceptionName);
 }
 
@@ -333,8 +333,8 @@ function failsOnMissingRequestData(
 ): void {
     $context ??= context();
 
-    expect(fn() => api()->request($context, json_encode($request)))
-        ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
+    expect(fn () => api()->request($context, json_encode($request)))
+        ->toThrow(fn (MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }
 
 /**
@@ -360,6 +360,6 @@ function failsOnMissingResponseData(
 
     $context ??= context();
 
-    expect(fn() => $api->request($context, json_encode($request)))
-        ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
+    expect(fn () => $api->request($context, json_encode($request)))
+        ->toThrow(fn (MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }

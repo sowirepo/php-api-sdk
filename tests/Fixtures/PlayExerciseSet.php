@@ -53,6 +53,14 @@ class PlayExerciseSet
         ],
     ];
 
+    public const ResponseOneExercise = [
+        [
+            'exercise_id' => 67890,
+            'try_id' => '12345',
+            'set_order' => '0',
+        ],
+    ];
+
     public const ResponseReadonlyView = [
         [
             'exercise_id' => 67890,
@@ -63,6 +71,22 @@ class PlayExerciseSet
             'exercise_id' => 67891,
             'try_id' => null,
             'set_order' => '1',
+        ],
+    ];
+
+    public const ResponseOneExerciseReadonlyView = [
+        [
+            'exercise_id' => 67890,
+            'try_id' => null,
+            'set_order' => '0',
+        ],
+    ];
+
+    public const ResponseAlternativeExerciseReadonlyView = [
+        [
+            'exercise_id' => 67891,
+            'try_id' => null,
+            'set_order' => '0',
         ],
     ];
 }

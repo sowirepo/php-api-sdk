@@ -22,6 +22,7 @@ use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
+use Sowiso\SDK\Hooks\HookInterface;
 
 class SowisoApi
 {
@@ -57,6 +58,19 @@ class SowisoApi
     }
 
     /**
+     * @param HookInterface $hook
+     * @return SowisoApi
+     */
+    public function useHook(HookInterface $hook): self
+    {
+        foreach ($hook->getCallbacks() as $callback) {
+            $this->useCallback($callback);
+        }
+
+        return $this;
+    }
+
+    /**
      * @throws SowisoApiException
      */
     public function request(SowisoApiContext $context, string $data): string
@@ -71,7 +85,7 @@ class SowisoApi
 
         $endpoint = $this->resolveEndpoint($json);
 
-        $endpoint
+        $endpoint = $endpoint
             ->withConfiguration($this->getConfiguration())
             ->withHttpClient($this->getHttpClient())
             ->withHttpRequestFactory($this->getHttpRequestFactory())

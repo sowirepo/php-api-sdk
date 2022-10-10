@@ -51,7 +51,7 @@ class PlayExerciseSetResponse extends AbstractResponse
     /**
      * @return array<int, array{exerciseId: int, tryId: int}>
      */
-    public function parseExerciseTries(): array
+    private function parseExerciseTries(): array
     {
         $exerciseTries = [];
 
@@ -69,7 +69,7 @@ class PlayExerciseSetResponse extends AbstractResponse
      * @param array<string, mixed> $item
      * @return array{exerciseId: int, tryId: int}|null
      */
-    public function parseExerciseTry(array $item): ?array
+    private function parseExerciseTry(array $item): ?array
     {
         $exerciseId = $item['exercise_id'] ?? null;
         $tryId = $item['try_id'] ?? null;
