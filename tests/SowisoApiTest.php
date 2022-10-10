@@ -56,12 +56,11 @@ it('automatically discovers PSR-17 and PSR-18 implementations', function () {
 });
 
 it('runs endpoint callbacks correctly', function (string $class, string $path, array $request, array $response) {
-    $api = api(
-        httpClient: mockHttpClient(
-            path: $path,
-            response: $response,
-        ),
-    );
+    $client = mockHttpClient([
+        ['path' => $path, 'body' => $response],
+    ]);
+
+    $api = api(httpClient: $client);
 
     $context = contextWithUsername();
 
