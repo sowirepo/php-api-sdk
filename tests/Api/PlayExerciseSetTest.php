@@ -6,7 +6,6 @@ use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetRequest;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
-use Sowiso\SDK\SowisoApiContext;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
 it('makes request correctly', function (string $uri, array $request, mixed $response) {
@@ -15,7 +14,7 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         uri: $uri,
         request: $request,
         response: $response,
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 })->with([
     'default' => [
@@ -41,7 +40,7 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
 ]);
 
 it('runs all callback methods correctly', function () {
-    $context = SowisoApiContext::create(username: 'user1');
+    $context = contextWithUsername();
 
     runsAllCallbackMethodsCorrectly(
         uri: PlayExerciseSet::Uri,
@@ -72,7 +71,7 @@ it('runs all callback methods correctly', function () {
 });
 
 it('runs all callback methods in readonly view correctly', function () {
-    $context = SowisoApiContext::create(username: 'user1');
+    $context = contextWithUsername();
 
     runsAllCallbackMethodsCorrectly(
         uri: PlayExerciseSet::UriReadonlyView,
@@ -100,7 +99,7 @@ it('runs onFailure callback method correctly on missing data', function () {
     runsOnFailureCallbackMethodCorrectlyOnMissingData(
         request: $request,
         callbackName: PlayExerciseSetCallback::class,
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 });
 
@@ -111,7 +110,7 @@ it('runs onFailure callback method correctly on invalid response', function () {
         response: '',
         callbackName: PlayExerciseSetCallback::class,
         exceptionName: InvalidJsonDataException::class,
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 });
 
@@ -122,7 +121,7 @@ it('fails on missing request set_id', function () {
     failsOnMissingRequestData(
         request: $request,
         missingFieldName: 'PlayExerciseSetRequest::setId',
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 });
 
@@ -135,7 +134,7 @@ it('fails on missing response try_id\'s', function () {
         request: PlayExerciseSet::Request,
         response: $response,
         missingFieldName: 'PlayExerciseSetResponse::exerciseTries',
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 });
 
@@ -148,6 +147,6 @@ it('fails on missing response exercise_id\'s', function () {
         request: PlayExerciseSet::Request,
         response: $response,
         missingFieldName: 'PlayExerciseSetResponse::exerciseTries',
-        context: SowisoApiContext::create(username: 'user1'),
+        context: contextWithUsername(),
     );
 });

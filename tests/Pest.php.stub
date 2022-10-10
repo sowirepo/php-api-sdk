@@ -1,0 +1,12 @@
+<?php
+
+/** @noinspection PhpIllegalPsrClassPathInspection */
+
+namespace Pest;
+
+/**
+ * @method Expectation toBeApiRequest(string $path, ?string $method = null, ?string $apiKey = null)
+ */
+final class Expectation
+{
+}

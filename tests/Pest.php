@@ -98,9 +98,15 @@ function configuration(
     return SowisoApiConfiguration::create($baseUrl, $apiKey);
 }
 
-function context(): SowisoApiContext
+function context(?string $username = null): SowisoApiContext
 {
-    return SowisoApiContext::create();
+    return SowisoApiContext::create(username: $username);
+}
+
+// TODO: user1
+function contextWithUsername(?string $username = 'user1'): SowisoApiContext
+{
+    return SowisoApiContext::create(username: $username);
 }
 
 function mockHttpClient(
@@ -303,7 +309,7 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
 /**
  * @param array $request
  * @param string $missingFieldName
- * @throws SowisoApiException
+ * @param SowisoApiContext|null $context
  */
 function failsOnMissingRequestData(
     array $request,
