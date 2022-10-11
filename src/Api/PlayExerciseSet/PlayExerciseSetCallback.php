@@ -6,6 +6,7 @@ namespace Sowiso\SDK\Api\PlayExerciseSet;
 
 use Exception;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnFailureData;
 use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnRequestData;
 use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnResponseData;
@@ -57,6 +58,14 @@ class PlayExerciseSetCallback implements CallbackInterface
     final public function endpoint(): string
     {
         return PlayExerciseSetEndpoint::class;
+    }
+
+    /**
+     * @return int of {@see CallbackPriority}
+     */
+    public function priority(): int
+    {
+        return CallbackPriority::MEDIUM;
     }
 
     /**

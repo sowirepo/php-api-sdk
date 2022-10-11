@@ -7,6 +7,7 @@ namespace Sowiso\SDK\Hooks;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
 use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
@@ -45,7 +46,7 @@ abstract class TryIdVerificationHook implements HookInterface
         throw new InvalidTryIdException();
     }
 
-    private function playExerciseSetCallback(): PlayExerciseSetCallback
+    final public function playExerciseSetCallback(): PlayExerciseSetCallback
     {
         return new class ($this) extends PlayExerciseSetCallback {
             public function __construct(private TryIdVerificationHook $hook)
@@ -63,11 +64,14 @@ abstract class TryIdVerificationHook implements HookInterface
                 }
             }
 
-            // TODO: priority()
+            public function priority(): int
+            {
+                return CallbackPriority::HIGH;
+            }
         };
     }
 
-    private function evaluateAnswerCallback(): EvaluateAnswerCallback
+    final public function evaluateAnswerCallback(): EvaluateAnswerCallback
     {
         return new class ($this) extends EvaluateAnswerCallback {
             public function __construct(private TryIdVerificationHook $hook)

@@ -22,6 +22,11 @@ interface CallbackInterface
     public function endpoint(): string;
 
     /**
+     * @return int of {@see CallbackPriority}
+     */
+    public function priority(): int;
+
+    /**
      * @param SowisoApiContext $context
      * @param TRequest $request
      * @return void

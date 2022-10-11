@@ -6,6 +6,7 @@ namespace Sowiso\SDK\Api\EvaluateAnswer;
 
 use Exception;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnFailureData;
 use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
 use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnResponseData;
@@ -57,6 +58,14 @@ class EvaluateAnswerCallback implements CallbackInterface
     final public function endpoint(): string
     {
         return EvaluateAnswerEndpoint::class;
+    }
+
+    /**
+     * @return int of {@see CallbackPriority}
+     */
+    public function priority(): int
+    {
+        return CallbackPriority::MEDIUM;
     }
 
     /**

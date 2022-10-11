@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Hooks\TryIdVerificationHook;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
@@ -71,4 +72,8 @@ it('verifies multiple try_id\'s correctly'); // TODO
 
 it('aborts verification of wrong try_id correctly'); // TODO
 
-it('uses high priority fall callbacks'); // TODO
+it('uses high priority fall callbacks', function () {
+    $hook = mock(TryIdVerificationHook::class);
+
+    expect($hook)->playExerciseSetCallback()->priority()->toBe(CallbackPriority::HIGH);
+});

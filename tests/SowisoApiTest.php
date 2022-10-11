@@ -10,6 +10,7 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\OnRequestDataInterface;
 use Sowiso\SDK\Data\OnResponseDataInterface;
 use Sowiso\SDK\Data\OnSuccessDataInterface;
@@ -24,6 +25,21 @@ use Sowiso\SDK\Exceptions\NoEndpointException;
 use Sowiso\SDK\SowisoApi;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
+
+dataset('api-endpoint-data', [
+    PlayExerciseSetEndpoint::NAME => [
+        PlayExerciseSetCallback::class,
+        PlayExerciseSet::Uri,
+        PlayExerciseSet::Request,
+        PlayExerciseSet::Response,
+    ],
+    EvaluateAnswerEndpoint::NAME => [
+        EvaluateAnswerCallback::class,
+        EvaluateAnswer::Uri,
+        EvaluateAnswer::Request,
+        EvaluateAnswer::Response,
+    ],
+]);
 
 it('accepts a configuration', function () {
     $configuration = configuration();
@@ -94,20 +110,53 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
     $api->useCallback($callback);
 
     $api->request($context, json_encode($request));
-})->with([
-    PlayExerciseSetEndpoint::NAME => [
-        PlayExerciseSetCallback::class,
-        PlayExerciseSet::Uri,
-        PlayExerciseSet::Request,
-        PlayExerciseSet::Response,
-    ],
-    EvaluateAnswerEndpoint::NAME => [
-        EvaluateAnswerCallback::class,
-        EvaluateAnswer::Uri,
-        EvaluateAnswer::Request,
-        EvaluateAnswer::Response,
-    ],
-]);
+})->with('api-endpoint-data');
+
+it('runs callbacks with priority in correct order', function (string $class, string $path, array $request, array $response) {
+    $client = mockHttpClient([
+        ['path' => $path, 'body' => $response],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $context = contextWithUsername();
+
+    /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $firstCallback */
+    $firstCallback = mock($class)
+        ->makePartial()
+        ->shouldReceive('priority')
+        ->andReturn(CallbackPriority::LOW)
+        ->getMock();
+
+    /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $secondCallback */
+    $secondCallback = mock($class)
+        ->makePartial();
+
+    /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $thirdCallback */
+    $thirdCallback = mock($class)
+        ->makePartial()
+        ->shouldReceive('priority')
+        ->andReturn(CallbackPriority::HIGH)
+        ->getMock();
+
+    $thirdCallback->expects('onRequest')->once()->globally()->ordered();
+    $secondCallback->expects('onRequest')->once()->globally()->ordered();
+    $firstCallback->expects('onRequest')->once()->globally()->ordered();
+
+    $thirdCallback->expects('onResponse')->once()->globally()->ordered();
+    $secondCallback->expects('onResponse')->once()->globally()->ordered();
+    $firstCallback->expects('onResponse')->once()->globally()->ordered();
+
+    $thirdCallback->expects('onSuccess')->once()->globally()->ordered();
+    $secondCallback->expects('onSuccess')->once()->globally()->ordered();
+    $firstCallback->expects('onSuccess')->once()->globally()->ordered();
+
+    $api->useCallback($firstCallback);
+    $api->useCallback($secondCallback);
+    $api->useCallback($thirdCallback);
+
+    $api->request($context, json_encode($request));
+})->with('api-endpoint-data');
 
 it('fails when no base url is set', function () {
     api(baseUrl: "")->request(context(), "{}");
