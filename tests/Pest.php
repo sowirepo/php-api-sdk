@@ -14,6 +14,10 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Data\OnFailureDataInterface;
+use Sowiso\SDK\Data\OnRequestDataInterface;
+use Sowiso\SDK\Data\OnResponseDataInterface;
+use Sowiso\SDK\Data\OnSuccessDataInterface;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApi;
@@ -211,20 +215,29 @@ function runsAllCallbackMethodsCorrectly(
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
 
-    $requestCapture = capture($requestCaptor);
-    $responseCapture = capture($responseCaptor);
+    $contextCaptor = fn (SowisoApiContext $it) => expect($it)->toBe($context);
 
-    $callback->expects('onRequest')
-        ->with($context, $requestCapture)
-        ->once();
+    $callback->expects('onRequest')->with(
+        capture(function (OnRequestDataInterface $data) use ($contextCaptor, $requestCaptor) {
+            $contextCaptor($data->getContext());
+            $requestCaptor($data->getRequest());
+        })
+    )->once();
 
-    $callback->expects('onResponse')
-        ->with($context, $responseCapture)
-        ->once();
+    $callback->expects('onResponse')->with(
+        capture(function (OnResponseDataInterface $data) use ($contextCaptor, $responseCaptor) {
+            $contextCaptor($data->getContext());
+            $responseCaptor($data->getResponse());
+        })
+    )->once();
 
-    $callback->expects('onSuccess')
-        ->with($context, $requestCapture, $responseCapture)
-        ->once();
+    $callback->expects('onSuccess')->with(
+        capture(function (OnSuccessDataInterface $data) use ($contextCaptor, $requestCaptor, $responseCaptor) {
+            $contextCaptor($data->getContext());
+            $requestCaptor($data->getRequest());
+            $responseCaptor($data->getResponse());
+        })
+    )->once();
 
     $callback->expects('onFailure')
         ->never();
@@ -252,18 +265,17 @@ function runsOnFailureCallbackMethodCorrectlyOnMissingData(
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
 
-    $exceptionCapture = capture(function (Exception $exception) {
-        expect($exception)
-            ->toBeInstanceOf(MissingDataException::class);
-    });
-
     $callback->expects('onRequest')->never();
     $callback->expects('onResponse')->never();
     $callback->expects('onSuccess')->never();
 
-    $callback->expects('onFailure')
-        ->with($context, $exceptionCapture)
-        ->once();
+    $callback->expects('onFailure')->with(
+        capture(function (OnFailureDataInterface $data) use ($context) {
+            expect($data)
+                ->getContext()->toBe($context)
+                ->getException()->toBeInstanceOf(MissingDataException::class);
+        })
+    )->once();
 
     $api->useCallback($callback);
 
@@ -299,21 +311,22 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
 
-    $exceptionCapture = capture(function (Exception $exception) use ($exceptionName) {
-        expect($exception)
-            ->toBeInstanceOf($exceptionName);
-    });
-
-    $callback->expects('onRequest')
-        ->withSomeOfArgs($context)
-        ->once();
+    $callback->expects('onRequest')->with(
+        capture(function (OnRequestDataInterface $data) use ($context, $exceptionName) {
+            expect($data)->getContext()->toBe($context);
+        })
+    )->once();
 
     $callback->expects('onResponse')->never();
     $callback->expects('onSuccess')->never();
 
-    $callback->expects('onFailure')
-        ->with($context, $exceptionCapture)
-        ->once();
+    $callback->expects('onFailure')->with(
+        capture(function (OnFailureDataInterface $data) use ($context, $exceptionName) {
+            expect($data)
+                ->getContext()->toBe($context)
+                ->getException()->toBeInstanceOf($exceptionName);
+        })
+    )->once();
 
     $api->useCallback($callback);
 

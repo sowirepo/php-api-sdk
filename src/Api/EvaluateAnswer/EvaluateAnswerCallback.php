@@ -6,6 +6,10 @@ namespace Sowiso\SDK\Api\EvaluateAnswer;
 
 use Exception;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnFailureData;
+use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
+use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnResponseData;
+use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
@@ -15,6 +19,41 @@ use Sowiso\SDK\SowisoApiContext;
  */
 class EvaluateAnswerCallback implements CallbackInterface
 {
+    /**
+     * @param EvaluateAnswerOnRequestData $data
+     * @return void
+     */
+    public function onRequest(EvaluateAnswerOnRequestData $data): void
+    {
+    }
+
+    /**
+     * @param EvaluateAnswerOnResponseData $data
+     * @return void
+     */
+    public function onResponse(EvaluateAnswerOnResponseData $data): void
+    {
+    }
+
+    /**
+     * @param EvaluateAnswerOnSuccessData $data
+     * @return void
+     */
+    public function onSuccess(EvaluateAnswerOnSuccessData $data): void
+    {
+    }
+
+    /**
+     * @param EvaluateAnswerOnFailureData $data
+     * @return void
+     */
+    public function onFailure(EvaluateAnswerOnFailureData $data): void
+    {
+    }
+
+    /**
+     * @return class-string<EvaluateAnswerEndpoint>
+     */
     final public function endpoint(): string
     {
         return EvaluateAnswerEndpoint::class;
@@ -25,7 +64,7 @@ class EvaluateAnswerCallback implements CallbackInterface
      */
     final public function request(SowisoApiContext $context, RequestInterface $request): void
     {
-        $this->onRequest($context, $request);
+        $this->onRequest(new EvaluateAnswerOnRequestData($context, $request));
     }
 
     /**
@@ -33,48 +72,20 @@ class EvaluateAnswerCallback implements CallbackInterface
      */
     final public function response(SowisoApiContext $context, ResponseInterface $response): void
     {
-        $this->onResponse($context, $response);
+        $this->onResponse(new EvaluateAnswerOnResponseData($context, $response));
     }
 
     /**
      * @param EvaluateAnswerRequest $request
      * @param EvaluateAnswerResponse $response
      */
-    final public function success(
-        SowisoApiContext $context,
-        RequestInterface $request,
-        ResponseInterface $response
-    ): void {
-        $this->onSuccess($context, $request, $response);
+    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    {
+        $this->onSuccess(new EvaluateAnswerOnSuccessData($context, $request, $response));
     }
 
     final public function failure(SowisoApiContext $context, Exception $exception): void
     {
-        $this->onFailure($context, $exception);
-    }
-
-    public function onRequest(
-        SowisoApiContext $context,
-        EvaluateAnswerRequest $request
-    ): void {
-    }
-
-    public function onResponse(
-        SowisoApiContext $context,
-        EvaluateAnswerResponse $response
-    ): void {
-    }
-
-    public function onSuccess(
-        SowisoApiContext $context,
-        EvaluateAnswerRequest $request,
-        EvaluateAnswerResponse $response
-    ): void {
-    }
-
-    public function onFailure(
-        SowisoApiContext $context,
-        Exception $exception
-    ): void {
+        $this->onFailure(new EvaluateAnswerOnFailureData($context, $exception));
     }
 }

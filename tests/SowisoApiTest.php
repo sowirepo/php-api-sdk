@@ -10,6 +10,9 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Data\OnRequestDataInterface;
+use Sowiso\SDK\Data\OnResponseDataInterface;
+use Sowiso\SDK\Data\OnSuccessDataInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidBaseUrlException;
@@ -68,20 +71,25 @@ it('runs endpoint callbacks correctly', function (string $class, string $path, a
     $callback = mock($class)
         ->makePartial();
 
-    $callback->expects('onRequest')
-        ->withSomeOfArgs($context)
-        ->once();
+    $callback->expects('onRequest')->with(
+        capture(function (OnRequestDataInterface $data) use ($context) {
+            expect($data)->getContext()->toBe($context);
+        })
+    )->once();
 
-    $callback->expects('onResponse')
-        ->withSomeOfArgs($context)
-        ->once();
+    $callback->expects('onResponse')->with(
+        capture(function (OnResponseDataInterface $data) use ($context) {
+            expect($data)->getContext()->toBe($context);
+        })
+    )->once();
 
-    $callback->expects('onSuccess')
-        ->withSomeOfArgs($context)
-        ->once();
+    $callback->expects('onSuccess')->with(
+        capture(function (OnSuccessDataInterface $data) use ($context) {
+            expect($data)->getContext()->toBe($context);
+        })
+    )->once();
 
-    $callback->expects('onFailure')
-        ->never();
+    $callback->expects('onFailure')->never();
 
     $api->useCallback($callback);
 

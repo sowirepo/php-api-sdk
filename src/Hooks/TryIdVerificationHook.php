@@ -5,11 +5,10 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Hooks;
 
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
-use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerRequest;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
-use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetRequest;
-use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetResponse;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
+use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
@@ -53,17 +52,14 @@ abstract class TryIdVerificationHook implements HookInterface
             {
             }
 
-            public function onSuccess(
-                SowisoApiContext $context,
-                PlayExerciseSetRequest $request,
-                PlayExerciseSetResponse $response
-            ): void {
-                if ($request->isReadonlyView()) {
+            public function onSuccess(PlayExerciseSetOnSuccessData $data): void
+            {
+                if ($data->getRequest()->isReadonlyView()) {
                     return;
                 }
 
-                foreach ($response->getExerciseTries() as $exerciseTry) {
-                    $this->hook->onRegisterTryId($context, $exerciseTry['tryId']);
+                foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
+                    $this->hook->onRegisterTryId($data->getContext(), $exerciseTry['tryId']);
                 }
             }
 
@@ -78,11 +74,9 @@ abstract class TryIdVerificationHook implements HookInterface
             {
             }
 
-            public function onRequest(
-                SowisoApiContext $context,
-                EvaluateAnswerRequest $request
-            ): void {
-                $this->hook->validateTryId($context, $request->getTryId());
+            public function onRequest(EvaluateAnswerOnRequestData $data): void
+            {
+                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
             }
         };
     }

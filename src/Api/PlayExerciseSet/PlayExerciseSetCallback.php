@@ -6,6 +6,10 @@ namespace Sowiso\SDK\Api\PlayExerciseSet;
 
 use Exception;
 use Sowiso\SDK\Callbacks\CallbackInterface;
+use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnFailureData;
+use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnRequestData;
+use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnResponseData;
+use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
@@ -15,6 +19,41 @@ use Sowiso\SDK\SowisoApiContext;
  */
 class PlayExerciseSetCallback implements CallbackInterface
 {
+    /**
+     * @param PlayExerciseSetOnRequestData $data
+     * @return void
+     */
+    public function onRequest(PlayExerciseSetOnRequestData $data): void
+    {
+    }
+
+    /**
+     * @param PlayExerciseSetOnResponseData $data
+     * @return void
+     */
+    public function onResponse(PlayExerciseSetOnResponseData $data): void
+    {
+    }
+
+    /**
+     * @param PlayExerciseSetOnSuccessData $data
+     * @return void
+     */
+    public function onSuccess(PlayExerciseSetOnSuccessData $data): void
+    {
+    }
+
+    /**
+     * @param PlayExerciseSetOnFailureData $data
+     * @return void
+     */
+    public function onFailure(PlayExerciseSetOnFailureData $data): void
+    {
+    }
+
+    /**
+     * @return class-string<PlayExerciseSetEndpoint>
+     */
     final public function endpoint(): string
     {
         return PlayExerciseSetEndpoint::class;
@@ -25,7 +64,7 @@ class PlayExerciseSetCallback implements CallbackInterface
      */
     final public function request(SowisoApiContext $context, RequestInterface $request): void
     {
-        $this->onRequest($context, $request);
+        $this->onRequest(new PlayExerciseSetOnRequestData($context, $request));
     }
 
     /**
@@ -33,48 +72,20 @@ class PlayExerciseSetCallback implements CallbackInterface
      */
     final public function response(SowisoApiContext $context, ResponseInterface $response): void
     {
-        $this->onResponse($context, $response);
+        $this->onResponse(new PlayExerciseSetOnResponseData($context, $response));
     }
 
     /**
      * @param PlayExerciseSetRequest $request
      * @param PlayExerciseSetResponse $response
      */
-    final public function success(
-        SowisoApiContext $context,
-        RequestInterface $request,
-        ResponseInterface $response
-    ): void {
-        $this->onSuccess($context, $request, $response);
+    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    {
+        $this->onSuccess(new PlayExerciseSetOnSuccessData($context, $request, $response));
     }
 
     final public function failure(SowisoApiContext $context, Exception $exception): void
     {
-        $this->onFailure($context, $exception);
-    }
-
-    public function onRequest(
-        SowisoApiContext $context,
-        PlayExerciseSetRequest $request
-    ): void {
-    }
-
-    public function onResponse(
-        SowisoApiContext $context,
-        PlayExerciseSetResponse $response
-    ): void {
-    }
-
-    public function onSuccess(
-        SowisoApiContext $context,
-        PlayExerciseSetRequest $request,
-        PlayExerciseSetResponse $response
-    ): void {
-    }
-
-    public function onFailure(
-        SowisoApiContext $context,
-        Exception $exception
-    ): void {
+        $this->onFailure(new PlayExerciseSetOnFailureData($context, $exception));
     }
 }
