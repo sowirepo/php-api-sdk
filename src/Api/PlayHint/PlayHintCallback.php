@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Api\PlayHint;
 
 use Exception;
+use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnFailureData;
+use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnRequestData;
+use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnResponseData;
+use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnSuccessData;
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintRequest;
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintResponse;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
-use Sowiso\SDK\Data\PlayHint\PlayHintOnFailureData;
-use Sowiso\SDK\Data\PlayHint\PlayHintOnRequestData;
-use Sowiso\SDK\Data\PlayHint\PlayHintOnResponseData;
-use Sowiso\SDK\Data\PlayHint\PlayHintOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;

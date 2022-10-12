@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Sowiso\SDK\Api\PlayExercise\Http\PlayExerciseRequest;
+use Sowiso\SDK\Api\PlayExercise\Http\PlayExerciseResponse;
 use Sowiso\SDK\Api\PlayExercise\PlayExerciseCallback;
-use Sowiso\SDK\Api\PlayExercise\PlayExerciseRequest;
-use Sowiso\SDK\Api\PlayExercise\PlayExerciseResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 

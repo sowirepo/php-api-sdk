@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Api\PlayExerciseSet;
 
+use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetRequest;
+use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;

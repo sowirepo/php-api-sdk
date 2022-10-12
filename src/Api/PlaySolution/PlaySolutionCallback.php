@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Api\PlaySolution;
 
 use Exception;
+use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnFailureData;
+use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnRequestData;
+use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnResponseData;
+use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnSuccessData;
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionRequest;
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionResponse;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
-use Sowiso\SDK\Data\PlaySolution\PlaySolutionOnFailureData;
-use Sowiso\SDK\Data\PlaySolution\PlaySolutionOnRequestData;
-use Sowiso\SDK\Data\PlaySolution\PlaySolutionOnResponseData;
-use Sowiso\SDK\Data\PlaySolution\PlaySolutionOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;

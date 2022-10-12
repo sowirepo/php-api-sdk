@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintRequest;
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintResponse;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
-use Sowiso\SDK\Api\PlayHint\PlayHintRequest;
-use Sowiso\SDK\Api\PlayHint\PlayHintResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
 

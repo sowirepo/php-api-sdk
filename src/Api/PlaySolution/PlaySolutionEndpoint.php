@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Api\PlaySolution;
 
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionRequest;
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionRequest;
+use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionResponse;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
-use Sowiso\SDK\Api\PlaySolution\PlaySolutionRequest;
-use Sowiso\SDK\Api\PlaySolution\PlaySolutionResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Tests\Fixtures\PlaySolution;
 

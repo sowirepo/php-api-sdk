@@ -3,8 +3,8 @@
 declare(strict_types=1);
 
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
-use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerRequest;
-use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerResponse;
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerRequest;
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 

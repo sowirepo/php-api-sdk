@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Api\EvaluateAnswer;
 
 use Exception;
+use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnFailureData;
+use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnRequestData;
+use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnResponseData;
+use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnSuccessData;
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerRequest;
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
-use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnFailureData;
-use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
-use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnResponseData;
-use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;

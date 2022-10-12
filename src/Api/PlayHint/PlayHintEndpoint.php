@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Api\PlayHint;
 
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintRequest;
+use Sowiso\SDK\Api\PlayHint\Http\PlayHintResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;

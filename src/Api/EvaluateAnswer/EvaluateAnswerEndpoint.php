@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Api\EvaluateAnswer;
 
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerRequest;
+use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;

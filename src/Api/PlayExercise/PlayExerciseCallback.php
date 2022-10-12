@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Api\PlayExercise;
 
 use Exception;
+use Sowiso\SDK\Api\PlayExercise\Data\PlayExerciseOnFailureData;
+use Sowiso\SDK\Api\PlayExercise\Data\PlayExerciseOnRequestData;
+use Sowiso\SDK\Api\PlayExercise\Data\PlayExerciseOnResponseData;
+use Sowiso\SDK\Api\PlayExercise\Data\PlayExerciseOnSuccessData;
+use Sowiso\SDK\Api\PlayExercise\Http\PlayExerciseRequest;
+use Sowiso\SDK\Api\PlayExercise\Http\PlayExerciseResponse;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
-use Sowiso\SDK\Data\PlayExercise\PlayExerciseOnFailureData;
-use Sowiso\SDK\Data\PlayExercise\PlayExerciseOnRequestData;
-use Sowiso\SDK\Data\PlayExercise\PlayExerciseOnResponseData;
-use Sowiso\SDK\Data\PlayExercise\PlayExerciseOnSuccessData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
+use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetRequest;
+use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetResponse;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
-use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetRequest;
-use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
@@ -56,11 +56,11 @@ it('runs all callback methods correctly', function () {
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
             expect($response->getExerciseTries())->sequence(
-                fn ($value) => $value->toMatchArray([
+                fn($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[0]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[0]['try_id'],
                 ]),
-                fn ($value) => $value->toMatchArray([
+                fn($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[1]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[1]['try_id'],
                 ]),
