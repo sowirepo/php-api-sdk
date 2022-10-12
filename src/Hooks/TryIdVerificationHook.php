@@ -14,6 +14,8 @@ use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnRequestData;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
 use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnRequestData;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
+use Sowiso\SDK\Api\StoreAnswer\Data\StoreAnswerOnRequestData;
+use Sowiso\SDK\Api\StoreAnswer\StoreAnswerCallback;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
@@ -41,6 +43,7 @@ abstract class TryIdVerificationHook implements HookInterface
             $this->playExerciseCallback(),
             $this->playHintCallback(),
             $this->playSolutionCallback(),
+            $this->storeAnswerCallback(),
         ];
     }
 
@@ -130,6 +133,20 @@ abstract class TryIdVerificationHook implements HookInterface
             }
 
             public function onRequest(PlaySolutionOnRequestData $data): void
+            {
+                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+            }
+        };
+    }
+
+    final public function storeAnswerCallback(): StoreAnswerCallback
+    {
+        return new class ($this) extends StoreAnswerCallback {
+            public function __construct(private TryIdVerificationHook $hook)
+            {
+            }
+
+            public function onRequest(StoreAnswerOnRequestData $data): void
             {
                 $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
             }

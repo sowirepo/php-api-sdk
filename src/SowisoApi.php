@@ -17,6 +17,7 @@ use Sowiso\SDK\Api\PlayExercise\PlayExerciseEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Api\PlayHint\PlayHintEndpoint;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionEndpoint;
+use Sowiso\SDK\Api\StoreAnswer\StoreAnswerEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\EndpointInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
@@ -36,6 +37,7 @@ class SowisoApi
         PlayExerciseSetEndpoint::NAME => PlayExerciseSetEndpoint::class,
         PlayHintEndpoint::NAME => PlayHintEndpoint::class,
         PlaySolutionEndpoint::NAME => PlaySolutionEndpoint::class,
+        StoreAnswerEndpoint::NAME => StoreAnswerEndpoint::class,
     ];
 
     /** @var array<class-string<EndpointInterface>, array<CallbackInterface<RequestInterface, ResponseInterface>>> */
