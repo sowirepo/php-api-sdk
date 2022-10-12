@@ -43,7 +43,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     {
         try {
             $request = $this->createRequest($context, $data);
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->request($context, $request));
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->request($context, $request));
 
             $uri = $this->configuration->getBaseUrl() . $request->getUri();
 
@@ -80,10 +80,10 @@ abstract class AbstractEndpoint implements EndpointInterface
             }
 
             $response = $this->createResponse($context, $fetchedData, $request);
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->response($context, $response));
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->response($context, $response));
         } catch (SowisoApiException|JsonException|ClientExceptionInterface|Exception $e) {
             // @phpstan-ignore-next-line
-            $this->runCallbacks(fn(CallbackInterface $callback) => $callback->failure($context, $e));
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->failure($context, $e));
 
             if ($e instanceof SowisoApiException) {
                 throw $e;
@@ -94,7 +94,7 @@ abstract class AbstractEndpoint implements EndpointInterface
             throw new FetchingFailedException($e);
         }
 
-        $this->runCallbacks(fn(CallbackInterface $callback) => $callback->success($context, $request, $response));
+        $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $request, $response));
 
         return [];
     }
@@ -163,7 +163,7 @@ abstract class AbstractEndpoint implements EndpointInterface
     {
         $callbacks = $this->callbacks;
 
-        usort($callbacks, fn(CallbackInterface $lhs, CallbackInterface $rhs) => $rhs->priority() <=> $lhs->priority());
+        usort($callbacks, fn (CallbackInterface $lhs, CallbackInterface $rhs) => $rhs->priority() <=> $lhs->priority());
 
         foreach ($callbacks as $callback) {
             $run($callback);

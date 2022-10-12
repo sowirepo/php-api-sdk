@@ -217,7 +217,7 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     $api->useHook(new BasicTryIdVerificationHook());
     $api->useCallback($callback);
 
-    expect(fn() => $api->request($context, json_encode($request)))
+    expect(fn () => $api->request($context, json_encode($request)))
         ->toThrow(InvalidTryIdException::class, sprintf("InvalidTryId '%d'", $request['try_id']));
 })->with([
     EvaluateAnswerEndpoint::NAME => [

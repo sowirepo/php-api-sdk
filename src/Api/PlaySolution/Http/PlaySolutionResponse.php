@@ -33,7 +33,7 @@ class PlaySolutionResponse extends AbstractResponse
         }
 
         $this->completed = $completed;
-        $this->score = $score;
+        $this->score = (float) $score;
     }
 
     public function isCompleted(): bool

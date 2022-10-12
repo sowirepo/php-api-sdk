@@ -25,7 +25,7 @@ class PlayExerciseSetResponse extends AbstractResponse
 
         $exerciseTries = $this->parseExerciseTries();
 
-        usort($exerciseTries, fn(array $lhs, array $rhs) => $lhs['tryId'] <=> $rhs['tryId']);
+        usort($exerciseTries, fn (array $lhs, array $rhs) => $lhs['tryId'] <=> $rhs['tryId']);
 
         // In readonly view, the exerciseTries array should be empty.
         // However, in non-readonly view, an exception should be thrown when the exerciseTries array isn't complete.
