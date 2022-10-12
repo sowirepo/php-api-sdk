@@ -10,9 +10,16 @@ class EvaluateAnswer
 {
     public const Uri = '/api/evaluate/answer/try_id/12345/view/student';
 
+    public const UriAlternative = '/api/evaluate/answer/try_id/12346/view/student';
+
     public const Request = [
         '__endpoint' => EvaluateAnswerEndpoint::NAME,
         'try_id' => 12345,
+    ];
+
+    public const RequestAlternative = [
+        '__endpoint' => EvaluateAnswerEndpoint::NAME,
+        'try_id' => 12346,
     ];
 
     public const Response = [

@@ -8,8 +8,13 @@ use InvalidArgumentException;
 
 final class InvalidTryIdException extends InvalidArgumentException implements SowisoApiException
 {
-    public function __construct()
+    public function __construct(private int $tryId)
     {
-        parent::__construct(sprintf("InvalidTryId '%d'", 123));
+        parent::__construct(sprintf("InvalidTryId '%d'", $tryId));
+    }
+
+    public function getTryId(): int
+    {
+        return $this->tryId;
     }
 }

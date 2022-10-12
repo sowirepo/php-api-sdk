@@ -43,7 +43,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
         $this->onCatchInvalidTryId($context, $tryId);
 
-        throw new InvalidTryIdException();
+        throw new InvalidTryIdException($tryId);
     }
 
     final public function playExerciseSetCallback(): PlayExerciseSetCallback

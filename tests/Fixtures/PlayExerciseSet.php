@@ -10,6 +10,8 @@ class PlayExerciseSet
 {
     public const Uri = '/api/play/set/set_id/234/username/user1/lang/en/view/student/arrays/true/payload/true';
 
+    public const UriAlternative = '/api/play/set/set_id/345/username/user2/lang/en/view/student/arrays/true/payload/true';
+
     public const UriReadonlyView = '/api/play/set/set_id/234/username/user1/lang/en/view/readonly/arrays/true/payload/true';
 
     public const UriWithoutLanguage = '/api/play/set/set_id/234/username/user1/view/student/arrays/true/payload/true';
@@ -19,6 +21,13 @@ class PlayExerciseSet
         'view' => 'student',
         'lang' => 'en',
         'set_id' => 234,
+    ];
+
+    public const RequestAlternative = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'set_id' => 345,
     ];
 
     public const RequestReadonlyView = [
@@ -57,6 +66,14 @@ class PlayExerciseSet
         [
             'exercise_id' => 67890,
             'try_id' => '12345',
+            'set_order' => '0',
+        ],
+    ];
+
+    public const ResponseAlternativeOneExercise = [
+        [
+            'exercise_id' => 67891,
+            'try_id' => '12346',
             'set_order' => '0',
         ],
     ];
