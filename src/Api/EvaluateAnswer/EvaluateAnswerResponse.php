@@ -31,7 +31,7 @@ class EvaluateAnswerResponse extends AbstractResponse
             throw MissingDataException::create(self::class, 'completed');
         }
 
-        if (null === ($score = $exerciseEvaluation['score'] ?? null) || !is_float($score)) {
+        if (null === ($score = $exerciseEvaluation['score'] ?? null) || !is_numeric($score)) {
             throw MissingDataException::create(self::class, 'score');
         }
 
