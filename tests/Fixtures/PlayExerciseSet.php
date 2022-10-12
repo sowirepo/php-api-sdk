@@ -10,7 +10,9 @@ class PlayExerciseSet
 {
     public const Uri = '/api/play/set/set_id/234/username/user1/lang/en/view/student/arrays/true/payload/true';
 
-    public const UriAlternative = '/api/play/set/set_id/345/username/user2/lang/en/view/student/arrays/true/payload/true';
+    public const UriAlternative = '/api/play/set/set_id/345/username/user1/lang/en/view/student/arrays/true/payload/true';
+
+    public const UriAlternativeUser = '/api/play/set/set_id/345/username/user2/lang/en/view/student/arrays/true/payload/true';
 
     public const UriReadonlyView = '/api/play/set/set_id/234/username/user1/lang/en/view/readonly/arrays/true/payload/true';
 

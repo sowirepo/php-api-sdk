@@ -41,13 +41,13 @@ it('runs hook correctly', function () {
         ['path' => StoreAnswer::Uri, 'body' => StoreAnswer::Response],
     ]);
 
-    $tryId = (int) PlayExerciseSet::ResponseOneExercise[0]['try_id'];
-
     $api = api(httpClient: $client);
 
     $hook = mock(TryIdVerificationHook::class)->makePartial();
 
     $context = contextWithUsername();
+
+    $tryId = (int) PlayExerciseSet::ResponseOneExercise[0]['try_id'];
 
     $hook->expects('onRegisterTryId')
         ->with(
@@ -57,8 +57,7 @@ it('runs hook correctly', function () {
                     ->getTryId()->toBe($tryId);
             })
         )
-        ->once()
-        ->andReturnSelf();
+        ->once();
 
     $hook->expects('isValidTryId')
         ->with(
@@ -145,7 +144,7 @@ it('verifies one try_id correctly', function () {
 it('verifies multiple try_id\'s correctly', function () {
     $client = mockHttpClient([
         ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
-        ['path' => PlayExerciseSet::UriAlternative, 'body' => PlayExerciseSet::ResponseAlternativeOneExercise],
+        ['path' => PlayExerciseSet::UriAlternativeUser, 'body' => PlayExerciseSet::ResponseAlternativeOneExercise],
         ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
         ['path' => EvaluateAnswer::UriAlternative, 'body' => EvaluateAnswer::Response],
     ]);
@@ -243,7 +242,7 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     ],
 ]);
 
-it('uses high priority fall callbacks', function () {
+it('uses high priority for callbacks', function () {
     $hook = mock(TryIdVerificationHook::class);
 
     expect($hook)->playExerciseSetCallback()->priority()->toBe(CallbackPriority::HIGH);
