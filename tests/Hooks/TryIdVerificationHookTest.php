@@ -20,7 +20,9 @@ use Sowiso\SDK\Data\OnFailureDataInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
-use Sowiso\SDK\Hooks\TryIdVerificationHook;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\IsValidTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
@@ -48,12 +50,24 @@ it('runs hook correctly', function () {
     $context = contextWithUsername();
 
     $hook->expects('onRegisterTryId')
-        ->with($context, $tryId)
+        ->with(
+            capture(function (OnRegisterTryIdData $data) use ($context, $tryId) {
+                expect($data)
+                    ->getContext()->toBe($context)
+                    ->getTryId()->toBe($tryId);
+            })
+        )
         ->once()
         ->andReturnSelf();
 
     $hook->expects('isValidTryId')
-        ->with($context, $tryId)
+        ->with(
+            capture(function (IsValidTryIdData $data) use ($context, $tryId) {
+                expect($data)
+                    ->getContext()->toBe($context)
+                    ->getTryId()->toBe($tryId);
+            })
+        )
         ->times(5)
         ->andReturnTrue();
 

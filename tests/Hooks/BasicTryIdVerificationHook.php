@@ -4,30 +4,32 @@ declare(strict_types=1);
 
 namespace Sowiso\SDK\Tests\Hooks;
 
-use Sowiso\SDK\Hooks\TryIdVerificationHook;
-use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\IsValidTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\OnCatchInvalidTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
 
 class BasicTryIdVerificationHook extends TryIdVerificationHook
 {
     /** @var array<int, array{name: string, validated: bool}> */
     private array $users = [];
 
-    public function onRegisterTryId(SowisoApiContext $context, int $tryId): void
+    public function onRegisterTryId(OnRegisterTryIdData $data): void
     {
-        $this->users[$tryId] = ['name' => $context->getUsername(), 'validated' => false];
+        $this->users[$data->getTryId()] = ['name' => $data->getContext()->getUsername(), 'validated' => false];
     }
 
-    public function onCatchInvalidTryId(SowisoApiContext $context, int $tryId): void
+    public function onCatchInvalidTryId(OnCatchInvalidTryIdData $data): void
     {
     }
 
-    public function isValidTryId(SowisoApiContext $context, int $tryId): bool
+    public function isValidTryId(IsValidTryIdData $data): bool
     {
-        if (null === $user = $this->users[$tryId] ?? null) {
+        if (null === $user = $this->users[$data->getTryId()] ?? null) {
             return false;
         }
 
-        if ($user['name'] !== $context->getUsername()) {
+        if ($user['name'] !== $data->getContext()->getUsername()) {
             return false;
         }
 
@@ -35,7 +37,7 @@ class BasicTryIdVerificationHook extends TryIdVerificationHook
             return false;
         }
 
-        $this->users[$tryId]['validated'] = true;
+        $this->users[$data->getTryId()]['validated'] = true;
 
         return true;
     }

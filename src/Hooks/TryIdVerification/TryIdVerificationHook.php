@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sowiso\SDK\Hooks;
+namespace Sowiso\SDK\Hooks\TryIdVerification;
 
 use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnRequestData;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
@@ -21,15 +21,19 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
+use Sowiso\SDK\Hooks\HookInterface;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\IsValidTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\OnCatchInvalidTryIdData;
+use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\SowisoApiContext;
 
 abstract class TryIdVerificationHook implements HookInterface
 {
-    abstract public function onRegisterTryId(SowisoApiContext $context, int $tryId): void;
+    abstract public function onRegisterTryId(OnRegisterTryIdData $data): void;
 
-    abstract public function onCatchInvalidTryId(SowisoApiContext $context, int $tryId): void;
+    abstract public function onCatchInvalidTryId(OnCatchInvalidTryIdData $data): void;
 
-    abstract public function isValidTryId(SowisoApiContext $context, int $tryId): bool;
+    abstract public function isValidTryId(IsValidTryIdData $data): bool;
 
     /**
      * @return array<CallbackInterface<RequestInterface, ResponseInterface>>
@@ -49,11 +53,11 @@ abstract class TryIdVerificationHook implements HookInterface
 
     final public function validateTryId(SowisoApiContext $context, int $tryId): void
     {
-        if ($this->isValidTryId($context, $tryId)) {
+        if ($this->isValidTryId(new IsValidTryIdData($context, $tryId))) {
             return;
         }
 
-        $this->onCatchInvalidTryId($context, $tryId);
+        $this->onCatchInvalidTryId(new OnCatchInvalidTryIdData($context, $tryId));
 
         throw new InvalidTryIdException($tryId);
     }
@@ -72,7 +76,7 @@ abstract class TryIdVerificationHook implements HookInterface
                 }
 
                 foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
-                    $this->hook->onRegisterTryId($data->getContext(), $exerciseTry['tryId']);
+                    $this->hook->onRegisterTryId(new OnRegisterTryIdData($data->getContext(), $exerciseTry['tryId']));
                 }
             }
 
