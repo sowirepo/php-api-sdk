@@ -8,12 +8,14 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\PlayExercise\PlayExerciseCallback;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
+use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\EvaluateAnswer\EvaluateAnswerOnRequestData;
 use Sowiso\SDK\Data\PlayExercise\PlayExerciseOnRequestData;
 use Sowiso\SDK\Data\PlayExerciseSet\PlayExerciseSetOnSuccessData;
 use Sowiso\SDK\Data\PlayHint\PlayHintOnRequestData;
+use Sowiso\SDK\Data\PlaySolution\PlaySolutionOnRequestData;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
@@ -38,6 +40,7 @@ abstract class TryIdVerificationHook implements HookInterface
             $this->evaluateAnswerCallback(),
             $this->playExerciseCallback(),
             $this->playHintCallback(),
+            $this->playSolutionCallback(),
         ];
     }
 
@@ -113,6 +116,20 @@ abstract class TryIdVerificationHook implements HookInterface
             }
 
             public function onRequest(PlayHintOnRequestData $data): void
+            {
+                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+            }
+        };
+    }
+
+    final public function playSolutionCallback(): PlaySolutionCallback
+    {
+        return new class ($this) extends PlaySolutionCallback {
+            public function __construct(private TryIdVerificationHook $hook)
+            {
+            }
+
+            public function onRequest(PlaySolutionOnRequestData $data): void
             {
                 $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
             }

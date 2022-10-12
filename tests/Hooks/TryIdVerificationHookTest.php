@@ -10,6 +10,8 @@ use Sowiso\SDK\Api\PlayExercise\PlayExerciseCallback;
 use Sowiso\SDK\Api\PlayExercise\PlayExerciseEndpoint;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
 use Sowiso\SDK\Api\PlayHint\PlayHintEndpoint;
+use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
+use Sowiso\SDK\Api\PlaySolution\PlaySolutionEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\OnFailureDataInterface;
@@ -21,6 +23,7 @@ use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
+use Sowiso\SDK\Tests\Fixtures\PlaySolution;
 use Sowiso\SDK\Tests\Hooks\BasicTryIdVerificationHook;
 
 it('runs hook correctly', function () {
@@ -29,6 +32,7 @@ it('runs hook correctly', function () {
         ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
         ['path' => PlayExercise::Uri, 'body' => PlayExercise::Response],
         ['path' => PlayHint::Uri, 'body' => PlayHint::Response],
+        ['path' => PlaySolution::Uri, 'body' => PlaySolution::Response],
     ]);
 
     $tryId = (int) PlayExerciseSet::ResponseOneExercise[0]['try_id'];
@@ -46,7 +50,7 @@ it('runs hook correctly', function () {
 
     $hook->expects('isValidTryId')
         ->with($context, $tryId)
-        ->times(3)
+        ->times(4)
         ->andReturnTrue();
 
     $hook->expects('onCatchInvalidTryId')->never();
@@ -57,6 +61,7 @@ it('runs hook correctly', function () {
     $api->request($context, json_encode(EvaluateAnswer::Request));
     $api->request($context, json_encode(PlayExercise::Request));
     $api->request($context, json_encode(PlayHint::Request));
+    $api->request($context, json_encode(PlaySolution::Request));
 });
 
 it('skips hook in readonly view correctly', function (string $path, mixed $response) {
@@ -208,6 +213,10 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     PlayHintEndpoint::NAME => [
         PlayHintCallback::class,
         PlayHint::Request,
+    ],
+    PlaySolutionEndpoint::NAME => [
+        PlaySolutionCallback::class,
+        PlaySolution::Request,
     ],
 ]);
 
