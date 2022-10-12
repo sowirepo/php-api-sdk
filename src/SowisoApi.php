@@ -13,6 +13,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use ReflectionClass;
 use ReflectionException;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
+use Sowiso\SDK\Api\PlayExercise\PlayExerciseEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\EndpointInterface;
@@ -29,6 +30,7 @@ class SowisoApi
     /** @var array<string, class-string<EndpointInterface>> */
     private array $endpoints = [
         EvaluateAnswerEndpoint::NAME => EvaluateAnswerEndpoint::class,
+        PlayExerciseEndpoint::NAME => PlayExerciseEndpoint::class,
         PlayExerciseSetEndpoint::NAME => PlayExerciseSetEndpoint::class,
     ];
 

@@ -6,6 +6,8 @@ use Mockery\Mock;
 use Mockery\MockInterface;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerEndpoint;
+use Sowiso\SDK\Api\PlayExercise\PlayExerciseCallback;
+use Sowiso\SDK\Api\PlayExercise\PlayExerciseEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\OnFailureDataInterface;
@@ -14,6 +16,7 @@ use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
 use Sowiso\SDK\Hooks\TryIdVerificationHook;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
+use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 use Sowiso\SDK\Tests\Hooks\BasicTryIdVerificationHook;
 
@@ -21,6 +24,7 @@ it('runs hook correctly', function () {
     $client = mockHttpClient([
         ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
         ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
+        ['path' => PlayExercise::Uri, 'body' => PlayExercise::Response],
     ]);
 
     $tryId = (int) PlayExerciseSet::ResponseOneExercise[0]['try_id'];
@@ -38,7 +42,7 @@ it('runs hook correctly', function () {
 
     $hook->expects('isValidTryId')
         ->with($context, $tryId)
-        ->times(1)
+        ->times(2)
         ->andReturnTrue();
 
     $hook->expects('onCatchInvalidTryId')->never();
@@ -47,6 +51,7 @@ it('runs hook correctly', function () {
 
     $api->request($context, json_encode(PlayExerciseSet::Request));
     $api->request($context, json_encode(EvaluateAnswer::Request));
+    $api->request($context, json_encode(PlayExercise::Request));
 });
 
 it('skips hook in readonly view correctly', function (string $path, mixed $response) {
@@ -190,6 +195,10 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     EvaluateAnswerEndpoint::NAME => [
         EvaluateAnswerCallback::class,
         EvaluateAnswer::Request,
+    ],
+    PlayExerciseEndpoint::NAME => [
+        PlayExerciseCallback::class,
+        PlayExercise::Request,
     ],
 ]);
 
