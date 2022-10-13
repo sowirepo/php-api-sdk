@@ -96,7 +96,7 @@ abstract class AbstractEndpoint implements EndpointInterface
 
         $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $request, $response));
 
-        return [];
+        return $fetchedData;
     }
 
     /**
