@@ -4,6 +4,8 @@ on:
     push:
         branches:
             - main
+        tags:
+            - v*
 
 jobs:
     test-lint:
@@ -113,8 +115,6 @@ jobs:
 
             -   name: Create Release
                 uses: ncipollo/release-action@v1
-                env:
-                    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                 with:
                     token: ${{ secrets.GITHUB_TOKEN }}
                     omitBody: true
