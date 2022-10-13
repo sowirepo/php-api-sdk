@@ -14,7 +14,7 @@ class PlayExerciseRequest extends AbstractRequest
 {
     private const VIEW_STUDENT = 'student';
 
-    private string $username;
+    private string $user;
 
     private ?string $language;
 
@@ -30,7 +30,7 @@ class PlayExerciseRequest extends AbstractRequest
     {
         parent::__construct($context, $data);
 
-        if (null === ($username = $context->getUsername()) || trim($username) === '') {
+        if (null === ($user = $context->getUser()) || trim($user) === '') {
             throw new NoUserException();
         }
 
@@ -41,7 +41,7 @@ class PlayExerciseRequest extends AbstractRequest
             throw MissingDataException::create(self::class, 'tryId');
         }
 
-        $this->username = $username;
+        $this->user = $user;
         $this->language = $language;
         $this->view = $view;
         $this->tryId = $tryId;
@@ -52,7 +52,7 @@ class PlayExerciseRequest extends AbstractRequest
         $uri = '/api/play/exercise';
 
         $uri .= sprintf('/try_id/%d', $this->tryId);
-        $uri .= sprintf('/username/%s', $this->username);
+        $uri .= sprintf('/username/%s', $this->user);
 
         if ($this->language !== null) {
             $uri .= sprintf('/lang/%s', $this->language);
@@ -66,9 +66,9 @@ class PlayExerciseRequest extends AbstractRequest
         return $uri;
     }
 
-    public function getUsername(): string
+    public function getUser(): string
     {
-        return $this->username;
+        return $this->user;
     }
 
     public function getLanguage(): ?string

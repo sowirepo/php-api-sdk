@@ -154,14 +154,14 @@ it('verifies multiple try_id\'s correctly', function () {
     $hook = new BasicTryIdVerificationHook();
     $api->useHook($hook);
 
-    $api->request(context(username: 'user1'), json_encode(PlayExerciseSet::Request));
+    $api->request(context(user: 'user1'), json_encode(PlayExerciseSet::Request));
 
     expect($hook)
         ->getUsers()->toHaveCount(1)
         ->getUserNameFor(12345)->toBe('user1')
         ->getUserValidatedFor(12345)->toBe(false);
 
-    $api->request(context(username: 'user2'), json_encode(PlayExerciseSet::RequestAlternative));
+    $api->request(context(user: 'user2'), json_encode(PlayExerciseSet::RequestAlternative));
 
     expect($hook)
         ->getUsers()->toHaveCount(2)
@@ -170,7 +170,7 @@ it('verifies multiple try_id\'s correctly', function () {
         ->getUserValidatedFor(12345)->toBe(false)
         ->getUserValidatedFor(12346)->toBe(false);
 
-    $api->request(context(username: 'user1'), json_encode(EvaluateAnswer::Request));
+    $api->request(context(user: 'user1'), json_encode(EvaluateAnswer::Request));
 
     expect($hook)
         ->getUsers()->toHaveCount(2)
@@ -179,7 +179,7 @@ it('verifies multiple try_id\'s correctly', function () {
         ->getUserValidatedFor(12345)->toBe(true)
         ->getUserValidatedFor(12346)->toBe(false);
 
-    $api->request(context(username: 'user2'), json_encode(EvaluateAnswer::RequestAlternative));
+    $api->request(context(user: 'user2'), json_encode(EvaluateAnswer::RequestAlternative));
 
     expect($hook)
         ->getUsers()->toHaveCount(2)
@@ -217,7 +217,7 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     $api->useHook(new BasicTryIdVerificationHook());
     $api->useCallback($callback);
 
-    expect(fn () => $api->request($context, json_encode($request)))
+    expect(fn() => $api->request($context, json_encode($request)))
         ->toThrow(InvalidTryIdException::class, sprintf("InvalidTryId '%d'", $request['try_id']));
 })->with([
     EvaluateAnswerEndpoint::NAME => [

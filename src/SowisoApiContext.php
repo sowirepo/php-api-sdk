@@ -11,7 +11,7 @@ class SowisoApiContext
      */
     public function __construct(
         private ?array $data,
-        private ?string $username,
+        private ?string $user,
     ) {
     }
 
@@ -20,9 +20,9 @@ class SowisoApiContext
      */
     public static function create(
         ?array $data = null,
-        ?string $username = null,
+        ?string $user = null,
     ): self {
-        return new self($data, $username);
+        return new self($data, $user);
     }
 
     /**
@@ -33,8 +33,8 @@ class SowisoApiContext
         return $this->data;
     }
 
-    public function getUsername(): ?string
+    public function getUser(): ?string
     {
-        return $this->username;
+        return $this->user;
     }
 }

@@ -44,7 +44,7 @@ it('runs all callback methods correctly', function () {
         callbackName: PlayExerciseCallback::class,
         requestCaptor: function (PlayExerciseRequest $request) use ($context) {
             expect($request)
-                ->getUsername()->toBe($context->getUsername())
+                ->getUser()->toBe($context->getUser())
                 ->getLanguage()->toBe(PlayExercise::Request['lang'])
                 ->getView()->toBe(PlayExercise::Request['view'])
                 ->getTryId()->toBe(PlayExercise::Request['try_id']);

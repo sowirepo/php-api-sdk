@@ -102,15 +102,15 @@ function configuration(
     return SowisoApiConfiguration::create($baseUrl, $apiKey);
 }
 
-function context(?string $username = null): SowisoApiContext
+function context(?string $user = null): SowisoApiContext
 {
-    return SowisoApiContext::create(username: $username);
+    return SowisoApiContext::create(user: $user);
 }
 
 // TODO: user1
-function contextWithUsername(?string $username = 'user1'): SowisoApiContext
+function contextWithUsername(?string $user = 'user1'): SowisoApiContext
 {
-    return SowisoApiContext::create(username: $username);
+    return SowisoApiContext::create(user: $user);
 }
 
 /**
@@ -125,8 +125,8 @@ function mockHttpClient(array $responses): HttpClient
         $client->on(
             requestMatcher: new RequestMatcher($response['path']),
             result: mock(ResponseInterface::class)->expect(
-                getStatusCode: fn () => $response['statusCode'] ?? 200,
-                getBody: fn () => Stream::create(json_encode($response['body'])),
+                getStatusCode: fn() => $response['statusCode'] ?? 200,
+                getBody: fn() => Stream::create(json_encode($response['body'])),
             )
         );
     }
@@ -179,7 +179,7 @@ function makesRequestCorrectly(
         ->toBeApiRequest($uri, $method)
         ->when(
             $httpRequest->getMethod() === 'POST',
-            fn ($httpRequest) => $httpRequest
+            fn($httpRequest) => $httpRequest
                 ->getHeader('Content-Type')->toBe(['application/json'])
                 ->getBody()->__toString()->not()->toContain('__endpoint')
         );
@@ -215,7 +215,7 @@ function runsAllCallbackMethodsCorrectly(
     /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
     $callback = mock($callbackName)->makePartial();
 
-    $contextCaptor = fn (SowisoApiContext $it) => expect($it)->toBe($context);
+    $contextCaptor = fn(SowisoApiContext $it) => expect($it)->toBe($context);
 
     $callback->expects('onRequest')->with(
         capture(function (OnRequestDataInterface $data) use ($contextCaptor, $requestCaptor) {
@@ -279,7 +279,7 @@ function runsOnFailureCallbackMethodCorrectlyOnMissingData(
 
     $api->useCallback($callback);
 
-    expect(fn () => $api->request($context, json_encode($request)))
+    expect(fn() => $api->request($context, json_encode($request)))
         ->toThrow(MissingDataException::class);
 }
 
@@ -330,7 +330,7 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
 
     $api->useCallback($callback);
 
-    expect(fn () => $api->request($context, json_encode($request)))
+    expect(fn() => $api->request($context, json_encode($request)))
         ->toThrow($exceptionName);
 }
 
@@ -346,8 +346,8 @@ function failsOnMissingRequestData(
 ): void {
     $context ??= context();
 
-    expect(fn () => api()->request($context, json_encode($request)))
-        ->toThrow(fn (MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
+    expect(fn() => api()->request($context, json_encode($request)))
+        ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }
 
 /**
@@ -373,6 +373,6 @@ function failsOnMissingResponseData(
 
     $context ??= context();
 
-    expect(fn () => $api->request($context, json_encode($request)))
-        ->toThrow(fn (MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
+    expect(fn() => $api->request($context, json_encode($request)))
+        ->toThrow(fn(MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
 }

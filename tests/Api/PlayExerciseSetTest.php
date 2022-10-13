@@ -49,18 +49,18 @@ it('runs all callback methods correctly', function () {
         callbackName: PlayExerciseSetCallback::class,
         requestCaptor: function (PlayExerciseSetRequest $request) use ($context) {
             expect($request)
-                ->getUsername()->toBe($context->getUsername())
+                ->getUser()->toBe($context->getUser())
                 ->getLanguage()->toBe(PlayExerciseSet::Request['lang'])
                 ->getView()->toBe(PlayExerciseSet::Request['view'])
                 ->getSetId()->toBe(PlayExerciseSet::Request['set_id']);
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
             expect($response->getExerciseTries())->sequence(
-                fn ($value) => $value->toMatchArray([
+                fn($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[0]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[0]['try_id'],
                 ]),
-                fn ($value) => $value->toMatchArray([
+                fn($value) => $value->toMatchArray([
                     'exerciseId' => PlayExerciseSet::Response[1]['exercise_id'],
                     'tryId' => PlayExerciseSet::Response[1]['try_id'],
                 ]),
@@ -80,7 +80,7 @@ it('runs all callback methods in readonly view correctly', function () {
         callbackName: PlayExerciseSetCallback::class,
         requestCaptor: function (PlayExerciseSetRequest $request) use ($context) {
             expect($request)
-                ->getUsername()->toBe($context->getUsername())
+                ->getUser()->toBe($context->getUser())
                 ->getLanguage()->toBe(PlayExerciseSet::RequestReadonlyView['lang'])
                 ->getView()->toBe(PlayExerciseSet::RequestReadonlyView['view'])
                 ->getSetId()->toBe(PlayExerciseSet::RequestReadonlyView['set_id']);

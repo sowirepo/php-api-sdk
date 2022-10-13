@@ -16,7 +16,7 @@ class BasicTryIdVerificationHook extends TryIdVerificationHook
 
     public function onRegisterTryId(OnRegisterTryIdData $data): void
     {
-        $this->users[$data->getTryId()] = ['name' => $data->getContext()->getUsername(), 'validated' => false];
+        $this->users[$data->getTryId()] = ['name' => $data->getContext()->getUser(), 'validated' => false];
     }
 
     public function onCatchInvalidTryId(OnCatchInvalidTryIdData $data): void
@@ -29,7 +29,7 @@ class BasicTryIdVerificationHook extends TryIdVerificationHook
             return false;
         }
 
-        if ($user['name'] !== $data->getContext()->getUsername()) {
+        if ($user['name'] !== $data->getContext()->getUser()) {
             return false;
         }
 
