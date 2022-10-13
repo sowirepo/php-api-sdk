@@ -1,0 +1,97 @@
+name: CI
+
+on: [ push, pull_request ]
+
+jobs:
+    lint:
+        name: Lint (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ '8.0' ]
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v2
+
+            -   name: Cache dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ~/.composer/cache/files
+                    key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none
+
+            -   name: Install Composer Dependencies
+                uses: ramsey/composer-install@v1
+
+            -   name: Run test:unit
+                run: composer test:lint
+
+    test:
+        name: Test (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ '8.0', '8.1' ]
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v2
+
+            -   name: Cache dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ~/.composer/cache/files
+                    key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none
+
+            -   name: Install Composer Dependencies
+                uses: ramsey/composer-install@v1
+
+            -   name: Run test:unit
+                run: composer test:unit
+
+    types:
+        name: Type Checking (PHP ${{ matrix.php }})
+        runs-on: ubuntu-latest
+
+        strategy:
+            fail-fast: false
+            matrix:
+                php: [ '8.0' ]
+
+        steps:
+            -   name: Checkout code
+                uses: actions/checkout@v2
+
+            -   name: Cache dependencies
+                uses: actions/cache@v2
+                with:
+                    path: ~/.composer/cache/files
+                    key: dependencies-php-${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none
+
+            -   name: Install Composer Dependencies
+                uses: ramsey/composer-install@v1
+
+            -   name: Run test:types
+                run: composer test:types
