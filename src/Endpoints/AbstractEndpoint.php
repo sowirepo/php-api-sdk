@@ -45,7 +45,7 @@ abstract class AbstractEndpoint implements EndpointInterface
             $request = $this->createRequest($context, $data);
             $this->runCallbacks(fn (CallbackInterface $callback) => $callback->request($context, $request));
 
-            $uri = $this->configuration->getBaseUrl() . $request->getUri();
+            $uri = rtrim($this->configuration->getBaseUrl(), '/') . $request->getUri();
 
             $httpRequest = $this->httpRequestFactory
                 ->createRequest($request->getMethod(), $uri)
