@@ -37,6 +37,21 @@ The SOWISO API requires these configuration settings:
 - **API Base URL**: The url of the SOWISO server to use. Example: _"https://cloud.sowiso.nl"_
 - **API Key**: The API key that's used to authenticate all requests. Only issued by SOWISO.
 
+#### PSR-17 and PSR-18
+
+The SDK allows to specify to use your own [HTTP Client (PSR-18)](http://www.php-fig.org/psr/psr-18) and your
+own [HTTP Message Factories (PSR-17)](http://www.php-fig.org/psr/psr-17).
+If not provided, the SDK used [this](https://github.com/php-http/discovery) package to automatically discover applicable packages in your project.
+
+```php
+$api = new SowisoApi(
+    configuration: SowisoApiConfiguration::create(), // The configuration is needed here
+    httpClient: ...,
+    httpRequestFactory: ...,
+    httpStreamFactory: ...,
+);
+```
+
 #### Context
 
 ```php
