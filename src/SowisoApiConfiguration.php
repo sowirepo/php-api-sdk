@@ -52,4 +52,9 @@ class SowisoApiConfiguration
     {
         return $this->apiKey;
     }
+
+    public function __toString(): string
+    {
+        return "SowisoApiConfiguration{baseUrl='{$this->getBaseUrl()}', apiKey='{$this->getApiKey()}'}";
+    }
 }

@@ -37,4 +37,11 @@ class SowisoApiContext
     {
         return $this->user;
     }
+
+    public function __toString(): string
+    {
+        $data = json_encode($this->getData());
+
+        return "SowisoApiContext{data='$data', user='{$this->getUser()}'}";
+    }
 }
