@@ -4,7 +4,9 @@ This PHP library contains the SDK to access the SOWISO API. It's not supposed to
 
 ## Installation
 
-_TBD_
+```bash
+composer require sowiso/php-api-sdk
+```
 
 ## Usage
 
