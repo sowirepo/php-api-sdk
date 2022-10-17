@@ -16,8 +16,17 @@ use Sowiso\SDK\Hooks\HookInterface;
 use Sowiso\SDK\Hooks\ScoreCapture\Data\OnScoreData;
 use Sowiso\SDK\Hooks\ScoreCapture\Data\OnScoreSource;
 
+/**
+ * The {@link ScoreCaptureHook} wraps all endpoints that return some form of score for a user.
+ */
 abstract class ScoreCaptureHook implements HookInterface
 {
+    /**
+     * This method is called when a score for a "Try ID" was returned by the API.
+     *
+     * @param OnScoreData $data containing the current context, the "Try ID", the score,
+     * whether the try was completed, and which endpoint (source) gave that score
+     */
     abstract public function onScore(OnScoreData $data): void;
 
     /**

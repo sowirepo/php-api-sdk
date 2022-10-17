@@ -27,12 +27,31 @@ use Sowiso\SDK\Hooks\TryIdVerification\Data\OnCatchInvalidTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\SowisoApiContext;
 
+/**
+ * The {@link TryIdVerificationHook} wraps all endpoints that deal with "Try IDs".
+ */
 abstract class TryIdVerificationHook implements HookInterface
 {
+    /**
+     * This method is called when a new "Try ID" was returned by the API.
+     *
+     * @param OnRegisterTryIdData $data containing the current context and the "Try ID"
+     */
     abstract public function onRegisterTryId(OnRegisterTryIdData $data): void;
 
+    /**
+     * This method is called when an invalid "Try ID" was caught.
+     *
+     * @param OnCatchInvalidTryIdData $data containing the current context and the "Try ID"
+     */
     abstract public function onCatchInvalidTryId(OnCatchInvalidTryIdData $data): void;
 
+    /**
+     * This method is called before requests that contain a "Try ID" are passed to the API.
+     *
+     * @param IsValidTryIdData $data containing the current context and the "Try ID"
+     * whether the "Try ID" is valid
+     */
     abstract public function isValidTryId(IsValidTryIdData $data): bool;
 
     /**

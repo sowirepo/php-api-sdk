@@ -13,8 +13,16 @@ use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
 use Sowiso\SDK\Hooks\HookInterface;
 
+/**
+ * The {@link DataCaptureHook} simplifies receiving common, processed data.
+ */
 abstract class DataCaptureHook implements HookInterface
 {
+    /**
+     * This method is called when a new "Exercise Try" was returned by the API.
+     *
+     * @param OnRegisterExerciseTryData $data containing the current context, the "Set ID", the "Exercise ID", and the "Try ID"
+     */
     abstract public function onRegisterExerciseTry(OnRegisterExerciseTryData $data): void;
 
     /**

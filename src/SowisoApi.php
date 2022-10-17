@@ -24,13 +24,24 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidTryIdException;
+use Sowiso\SDK\Exceptions\MissingDataException;
+use Sowiso\SDK\Exceptions\NoApiKeyException;
+use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
+use Sowiso\SDK\Exceptions\NoUserException;
+use Sowiso\SDK\Exceptions\ResponseErrorException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\Hooks\HookInterface;
 
 class SowisoApi
 {
-    /** @var array<string, class-string<EndpointInterface>> */
+    /**
+     * Holds all registered endpoints.
+     * It's used to resolve the {@link SowisoApiConfiguration::ENDPOINT_IDENTIFIER} identifier.
+     *
+     * @var array<string, class-string<EndpointInterface>>
+     */
     private array $endpoints = [
         EvaluateAnswerEndpoint::NAME => EvaluateAnswerEndpoint::class,
         PlayExerciseEndpoint::NAME => PlayExerciseEndpoint::class,
@@ -40,7 +51,14 @@ class SowisoApi
         StoreAnswerEndpoint::NAME => StoreAnswerEndpoint::class,
     ];
 
-    /** @var array<class-string<EndpointInterface>, array<CallbackInterface<RequestInterface, ResponseInterface>>> */
+    /**
+     * Holds all registered callbacks.
+     * It's used to find the registered callback linked to the {@link SowisoApiConfiguration::ENDPOINT_IDENTIFIER} identifier.
+     *
+     * Registering a callback is done by the SDK's user.
+     *
+     * @var array<class-string<EndpointInterface>, array<CallbackInterface<RequestInterface, ResponseInterface>>>
+     */
     private array $callbacks = [];
 
     public function __construct(
@@ -52,6 +70,8 @@ class SowisoApi
     }
 
     /**
+     * Registers any callback that implements {@link CallbackInterface}.
+     *
      * @param CallbackInterface<RequestInterface, ResponseInterface> $callback
      * @return SowisoApi
      */
@@ -66,6 +86,8 @@ class SowisoApi
     }
 
     /**
+     * Registers any hook that implements {@link HookInterface}.
+     *
      * @param HookInterface $hook
      * @return SowisoApi
      */
@@ -79,7 +101,24 @@ class SowisoApi
     }
 
     /**
-     * @throws SowisoApiException
+     * Takes JSON data as input and forwards it to the API. The API's JSON response is then returned.
+     *
+     * The API endpoint to use is determined by the {@link SowisoApiConfiguration::ENDPOINT_IDENTIFIER} field in the JSON data.
+     * When the data has all the required fields for the specific endpoint, the corresponding callback methods are called.
+     *
+     * @param SowisoApiContext $context a data object that is passed to the callbacks and hooks
+     * @param string $data the JSON data to handle
+     * @return string the JSON data returned by the API
+     * @throws NoBaseUrlException when no API base url is set
+     * @throws NoApiKeyException when no API key is set
+     * @throws NoUserException when no API user is set in the context (and the requested endpoint requires it)
+     * @throws NoEndpointException when the API request is missing the endpoint to fetch
+     * @throws InvalidEndpointException when the API request has specified an invalid endpoint to fetch
+     * @throws InvalidJsonDataException when the API request or response has invalid JSON data
+     * @throws MissingDataException when the API request or response is missing required data
+     * @throws ResponseErrorException when the API response has an error
+     * @throws InvalidTryIdException when an invalid SOWISO try id is caught - thrown by {@link TryIdVerificationHook}
+     * @throws SowisoApiException when any other error occurs
      */
     public function request(SowisoApiContext $context, string $data): string
     {
@@ -110,6 +149,8 @@ class SowisoApi
     }
 
     /**
+     * Helper method to resolve a registered from the request JSON data.
+     *
      * @param array<string, mixed> $json
      * @throws SowisoApiException
      */
