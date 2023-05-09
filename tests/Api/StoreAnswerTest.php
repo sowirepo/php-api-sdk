@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\StoreAnswer\Http\StoreAnswerRequest;
 use Sowiso\SDK\Api\StoreAnswer\Http\StoreAnswerResponse;
 use Sowiso\SDK\Api\StoreAnswer\StoreAnswerCallback;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Tests\Fixtures\StoreAnswer;
 
 it('makes request correctly', function () {
@@ -48,7 +48,7 @@ it('runs onFailure callback method correctly on invalid response', function () {
         request: StoreAnswer::Request,
         response: '',
         callbackName: StoreAnswerCallback::class,
-        exceptionName: InvalidJsonDataException::class,
+        exceptionName: InvalidJsonResponseException::class,
     );
 });
 

@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\PlayHint\Http\PlayHintRequest;
 use Sowiso\SDK\Api\PlayHint\Http\PlayHintResponse;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
 
 it('makes request correctly', function (string $uri, array $request, mixed $response) {
@@ -63,7 +63,7 @@ it('runs onFailure callback method correctly on invalid response', function () {
         request: PlayHint::Request,
         response: '',
         callbackName: PlayHintCallback::class,
-        exceptionName: InvalidJsonDataException::class,
+        exceptionName: InvalidJsonResponseException::class,
         context: context(),
     );
 });

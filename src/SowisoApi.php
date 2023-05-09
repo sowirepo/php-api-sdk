@@ -24,6 +24,8 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonRequestException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\InvalidTryIdException;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
@@ -114,7 +116,9 @@ class SowisoApi
      * @throws NoUserException when no API user is set in the context (and the requested endpoint requires it)
      * @throws NoEndpointException when the API request is missing the endpoint to fetch
      * @throws InvalidEndpointException when the API request has specified an invalid endpoint to fetch
-     * @throws InvalidJsonDataException when the API request or response has invalid JSON data
+     * @throws InvalidJsonDataException when the SDK cannot handle JSON data
+     * @throws InvalidJsonRequestException when the API request has invalid JSON data
+     * @throws InvalidJsonResponseException when the API response has invalid JSON data
      * @throws MissingDataException when the API request or response is missing required data
      * @throws ResponseErrorException when the API response has an error
      * @throws InvalidTryIdException when an invalid SOWISO try id is caught - thrown by {@link TryIdVerificationHook}
@@ -125,7 +129,7 @@ class SowisoApi
         try {
             $json = (array) json_decode($data, associative: true, flags: JSON_THROW_ON_ERROR);
         } catch (JsonException $e) {
-            throw new InvalidJsonDataException($e);
+            throw new InvalidJsonRequestException($e);
         }
 
         $this->configuration->validate();

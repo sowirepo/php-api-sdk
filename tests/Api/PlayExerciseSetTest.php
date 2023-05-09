@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetRequest;
 use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetResponse;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
 it('makes request correctly', function (string $uri, array $request, mixed $response) {
@@ -109,7 +109,7 @@ it('runs onFailure callback method correctly on invalid response', function () {
         request: PlayExerciseSet::Request,
         response: '',
         callbackName: PlayExerciseSetCallback::class,
-        exceptionName: InvalidJsonDataException::class,
+        exceptionName: InvalidJsonResponseException::class,
         context: contextWithUsername(),
     );
 });

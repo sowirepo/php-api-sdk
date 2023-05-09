@@ -93,7 +93,11 @@ try {
 } catch (InvalidEndpointException $e) {
     // when the API request has specified an invalid endpoint to fetch
 } catch (InvalidJsonDataException $e) {
-    // when the API request or response has invalid JSON data
+    // when the SDK cannot handle JSON data
+} catch (InvalidJsonRequestException $e) {
+    // when the API request has invalid JSON data
+} catch (InvalidJsonResponseException $e) {
+    // when the API response has invalid JSON data
 } catch (MissingDataException $e) {
     // when the API request or response is missing required data
 } catch (ResponseErrorException $e) {

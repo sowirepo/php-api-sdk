@@ -18,7 +18,8 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidBaseUrlException;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonRequestException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
@@ -170,14 +171,6 @@ it('fails when no API key is set', function () {
     api(apiKey: "")->request(context(), "{}");
 })->throws(NoApiKeyException::class);
 
-it('fails with no JSON data', function () {
-    api()->request(context(), "");
-})->throws(InvalidJsonDataException::class);
-
-it('fails with invalid JSON data', function () {
-    api()->request(context(), "{ / }");
-})->throws(InvalidJsonDataException::class);
-
 it('fails with no endpoint', function () {
     api()->request(context(), "{}");
 })->throws(NoEndpointException::class);
@@ -185,3 +178,17 @@ it('fails with no endpoint', function () {
 it('fails with invalid endpoint', function () {
     api()->request(context(), json_encode(['__endpoint' => 'XYZ']));
 })->throws(InvalidEndpointException::class);
+
+it('fails with invalid JSON request data', function (string $request) {
+    api()->request(context(), $request);
+})->with(["", "{ / }"])->throws(InvalidJsonRequestException::class);
+
+it('fails with invalid JSON response data', function (string $response) {
+    $client = mockHttpClient([
+        ['path' => PlayExerciseSet::Uri, 'body' => $response],
+    ]);
+
+    $request = json_encode(PlayExerciseSet::Request);
+
+    api(httpClient: $client)->request(contextWithUsername(), $request);
+})->with(["", "{ / }", "<!DOCTYPE html> ..."])->throws(InvalidJsonResponseException::class);

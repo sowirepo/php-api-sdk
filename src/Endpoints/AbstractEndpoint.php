@@ -15,6 +15,7 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\FetchingFailedException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\ResponseErrorException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiConfiguration;
@@ -61,15 +62,19 @@ abstract class AbstractEndpoint implements EndpointInterface
             $httpStatusCode = $httpResponse->getStatusCode();
             $httpBody = (string) $httpResponse->getBody();
 
+            if ($httpBody === '') {
+                throw new InvalidJsonResponseException();
+            }
+
             /** @var array<string, mixed>|bool|null $fetchedData */
             $fetchedData = json_decode(
-                $httpBody === '' ? '{}' : $httpBody,
+                $httpBody,
                 associative: true,
                 flags: JSON_THROW_ON_ERROR,
             );
 
             if (!is_array($fetchedData)) {
-                throw new InvalidJsonDataException();
+                throw new InvalidJsonResponseException();
             }
 
             if ($httpStatusCode !== 200) {
@@ -88,7 +93,7 @@ abstract class AbstractEndpoint implements EndpointInterface
             if ($e instanceof SowisoApiException) {
                 throw $e;
             } elseif ($e instanceof JsonException) {
-                throw new InvalidJsonDataException($e);
+                throw new InvalidJsonResponseException($e);
             }
 
             throw new FetchingFailedException($e);

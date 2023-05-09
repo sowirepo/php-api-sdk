@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerRequest;
 use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
+use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 
 it('makes request correctly', function () {
@@ -51,7 +51,7 @@ it('runs onFailure callback method correctly on invalid response', function () {
         request: EvaluateAnswer::Request,
         response: '',
         callbackName: EvaluateAnswerCallback::class,
-        exceptionName: InvalidJsonDataException::class,
+        exceptionName: InvalidJsonResponseException::class,
     );
 });
 
