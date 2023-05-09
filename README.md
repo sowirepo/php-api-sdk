@@ -180,6 +180,16 @@ Providing both fields is not allowed and results in an `InvalidDataException`._
 _This endpoint only supports getting an exercise for a "Try ID", for now. Requesting an exercise for an "Exercise ID"
 might be supported in a later version of the SDK._
 
+#### ReplayExerciseTry
+
+- **Name**: replay/try
+- **API Endpoint**: `GET` `/api/play/replay/try_id/:try_id/lang/:lang`
+- **API Documentation**: https://cloud.sowiso.nl/documentation/api/index.html#api-Player-ReplayExercise
+- **Request fields**:
+    - `try_id` (Integer)
+    - `lang` (String) [optional]
+- **Response fields**: _none_
+
 #### EvaluateAnswer
 
 - **Name**: evaluate/answer
@@ -260,6 +270,19 @@ $api->useCallback(new class extends PlayExerciseCallback {
     public function onResponse(PlayExerciseOnResponseData $data): void {}
     public function onSuccess(PlayExerciseOnSuccessData $data): void {}
     public function onFailure(PlayExerciseOnFailureData $data): void {}
+});
+```
+
+#### ReplayExerciseTry
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useCallback(new class extends ReplayExerciseTryCallback {
+    public function onRequest(ReplayExerciseTryOnRequestData $data): void {}
+    public function onResponse(ReplayExerciseTryOnResponseData $data): void {}
+    public function onSuccess(ReplayExerciseTryOnSuccessData $data): void {}
+    public function onFailure(ReplayExerciseTryOnFailureData $data): void {}
 });
 ```
 

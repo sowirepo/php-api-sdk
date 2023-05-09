@@ -14,6 +14,8 @@ use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnRequestData;
 use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
 use Sowiso\SDK\Api\PlaySolution\Data\PlaySolutionOnRequestData;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
+use Sowiso\SDK\Api\ReplayExerciseTry\Data\ReplayExerciseTryOnRequestData;
+use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryCallback;
 use Sowiso\SDK\Api\StoreAnswer\Data\StoreAnswerOnRequestData;
 use Sowiso\SDK\Api\StoreAnswer\StoreAnswerCallback;
 use Sowiso\SDK\Callbacks\CallbackInterface;
@@ -65,6 +67,7 @@ abstract class TryIdVerificationHook implements HookInterface
             $this->playExerciseSetCallback(),
             $this->evaluateAnswerCallback(),
             $this->playExerciseCallback(),
+            $this->replayExerciseTryCallback(),
             $this->playHintCallback(),
             $this->playSolutionCallback(),
             $this->storeAnswerCallback(),
@@ -144,6 +147,20 @@ abstract class TryIdVerificationHook implements HookInterface
             }
 
             public function onRequest(PlayExerciseOnRequestData $data): void
+            {
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+            }
+        };
+    }
+
+    final public function replayExerciseTryCallback(): ReplayExerciseTryCallback
+    {
+        return new class ($this) extends ReplayExerciseTryCallback {
+            public function __construct(private TryIdVerificationHook $hook)
+            {
+            }
+
+            public function onRequest(ReplayExerciseTryOnRequestData $data): void
             {
                 $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }

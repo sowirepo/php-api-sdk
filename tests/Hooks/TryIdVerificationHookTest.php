@@ -12,6 +12,8 @@ use Sowiso\SDK\Api\PlayHint\PlayHintCallback;
 use Sowiso\SDK\Api\PlayHint\PlayHintEndpoint;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionEndpoint;
+use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryCallback;
+use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryEndpoint;
 use Sowiso\SDK\Api\StoreAnswer\StoreAnswerCallback;
 use Sowiso\SDK\Api\StoreAnswer\StoreAnswerEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
@@ -30,6 +32,7 @@ use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
 use Sowiso\SDK\Tests\Fixtures\PlaySolution;
+use Sowiso\SDK\Tests\Fixtures\ReplayExerciseTry;
 use Sowiso\SDK\Tests\Fixtures\StoreAnswer;
 use Sowiso\SDK\Tests\Hooks\BasicTryIdVerificationHook;
 
@@ -38,6 +41,7 @@ it('runs hook correctly', function () {
         ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
         ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
         ['path' => PlayExercise::Uri, 'body' => PlayExercise::Response],
+        ['path' => ReplayExerciseTry::Uri, 'body' => ReplayExerciseTry::Response],
         ['path' => PlayHint::Uri, 'body' => PlayHint::Response],
         ['path' => PlaySolution::Uri, 'body' => PlaySolution::Response],
         ['path' => StoreAnswer::Uri, 'body' => StoreAnswer::Response],
@@ -69,7 +73,7 @@ it('runs hook correctly', function () {
                     ->getTryId()->toBe($tryId);
             })
         )
-        ->times(5)
+        ->times(6)
         ->andReturnTrue();
 
     $hook->expects('onCatchInvalidTryId')->never();
@@ -79,6 +83,7 @@ it('runs hook correctly', function () {
     $api->request($context, json_encode(PlayExerciseSet::Request));
     $api->request($context, json_encode(EvaluateAnswer::Request));
     $api->request($context, json_encode(PlayExercise::Request));
+    $api->request($context, json_encode(ReplayExerciseTry::Request));
     $api->request($context, json_encode(PlayHint::Request));
     $api->request($context, json_encode(PlaySolution::Request));
     $api->request($context, json_encode(StoreAnswer::Request));
@@ -272,6 +277,10 @@ it('aborts verification of wrong try_id correctly', function (string $class, arr
     PlayExerciseEndpoint::NAME => [
         PlayExerciseCallback::class,
         PlayExercise::Request,
+    ],
+    ReplayExerciseTryEndpoint::NAME => [
+        ReplayExerciseTryCallback::class,
+        ReplayExerciseTry::Request,
     ],
     PlayHintEndpoint::NAME => [
         PlayHintCallback::class,
