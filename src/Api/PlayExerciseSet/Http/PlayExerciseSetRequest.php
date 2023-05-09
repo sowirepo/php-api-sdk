@@ -42,19 +42,14 @@ class PlayExerciseSetRequest extends AbstractRequest
         $language = is_string($language = $data['lang'] ?? null) ? $language : null;
         $view = is_string($view = $data['view'] ?? null) ? $view : null;
 
-        if (null !== ($setId = $data['set_id'] ?? null)) {
-            $setId = intval($setId);
-        }
+        $setId = is_int($setId = $data['set_id'] ?? null) ? $setId : null;
+        $tryId = is_int($tryId = $data['try_id'] ?? null) ? $tryId : null;
 
-        if (null !== ($tryId = $data['try_id'] ?? null)) {
-            $tryId = intval($tryId);
-        }
-
-        if (!is_int($tryId) && !is_int($setId)) {
+        if ($tryId === null && $setId === null) {
             throw MissingDataException::create(self::class, 'setId');
         }
 
-        if (is_int($tryId) && is_int($setId)) {
+        if ($tryId !== null && $setId !== null) {
             throw InvalidDataException::create('setId and tryId supplied');
         }
 

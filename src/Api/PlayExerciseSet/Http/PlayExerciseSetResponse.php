@@ -84,8 +84,8 @@ class PlayExerciseSetResponse extends AbstractResponse
         }
 
         return [
-            'exerciseId' => intval($exerciseId),
-            'tryId' => intval($tryId),
+            'exerciseId' => intval($exerciseId), // @phpstan-ignore-line
+            'tryId' => intval($tryId), // @phpstan-ignore-line
         ];
     }
 }
