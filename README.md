@@ -36,7 +36,7 @@ $api = new SowisoApi($configuration);
 
 The SOWISO API requires these configuration settings:
 
-- **API Base URL**: The url of the SOWISO server to use. Example: _"https://cloud.sowiso.nl"_
+- **API Base URL**: The url of the SOWISO server to use. Example: _"https://cloud.sowiso.nl"_ (no trailing forward-slash)
 - **API Key**: The API key that's used to authenticate all requests. Only issued by SOWISO.
 
 #### PSR-17 and PSR-18
@@ -64,7 +64,7 @@ $context = SowisoApiContext::create(
     user: 'CURRENT_USER',
 );
 
-$response = $api->request($context, '{}');
+$response = $api->request($context, '{}'); // The JSON data from the request
 ```
 
 The context can be used to pass arbitrary data from the request into the callback and hook methods.
