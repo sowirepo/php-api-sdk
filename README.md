@@ -106,6 +106,8 @@ try {
     // when the API response has invalid JSON data
 } catch (MissingDataException $e) {
     // when the API request or response is missing required data
+} catch (InvalidDataException $e) {
+    // when the API request or response contains invalid data
 } catch (ResponseErrorException $e) {
     // when the API response has an error
 } catch (FetchingFailedException $e) {
@@ -143,10 +145,12 @@ At the moment, the following endpoints are available in the SDK:
 #### PlayExerciseSet
 
 - **Name**: play/set
-- **API Endpoint**: `GET` `/api/play/set/set_id/:set_id/username/:username/lang/:lang/view/:view`
+- **API Endpoint**:
+    - `GET` `/api/play/set/set_id/:set_id/username/:username/lang/:lang/view/:view`
+    - `GET` `/api/play/set/try_id/:try_id/username/:username/lang/:lang/view/:view`
 - **API Documentation**: https://cloud.sowiso.nl/documentation/api/index.html#api-Player-PlaySet
 - **Request fields**:
-    - `set_id` (Integer)
+    - `set_id` (Integer) **OR** `try_id` (Integer)
     - `lang` (String) [optional]
     - `view` (String) (`student|readonly`) [optional, default=student]
 - **Response fields**:
@@ -154,8 +158,11 @@ At the moment, the following endpoints are available in the SDK:
 - **Required context fields**:
     - `username` (String)
 
-_When the requested view is set to `readonly`, no "Try IDs" are returned for the exercises in that set. Hence, the
-corresponding hooks that handle "Try IDs" are not called._
+_When the requested view is set to `readonly`, no "Try IDs" are returned for the exercises in that set.
+Hence, the corresponding hooks that handle "Try IDs" are not called._
+
+_When a request contains a `try_id` instead of a `set_id`, the API _continues_ the exercise set that belongs to that `try_id`.
+Providing both fields is not allowed and results in an `InvalidDataException`._
 
 #### PlayExercise
 

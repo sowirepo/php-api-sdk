@@ -95,6 +95,15 @@ abstract class TryIdVerificationHook implements HookInterface
                     return;
                 }
 
+                if ($data->getRequest()->usesTryId()) {
+                    // Safe to cast to an int because we checked if the try_id is used or not
+                    $tryId = (int) $data->getRequest()->getTryId();
+
+                    $this->hook->validateTryId($data->getContext(), $data->getPayload(), $tryId);
+
+                    return;
+                }
+
                 foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
                     $this->hook->onRegisterTryId(
                         new OnRegisterTryIdData(

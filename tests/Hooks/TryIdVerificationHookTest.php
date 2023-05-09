@@ -84,6 +84,49 @@ it('runs hook correctly', function () {
     $api->request($context, json_encode(StoreAnswer::Request));
 });
 
+it('runs hook for play/set with try_id correctly', function () {
+    $client = mockHttpClient([
+        ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
+        ['path' => PlayExerciseSet::UriWithTryId, 'body' => PlayExerciseSet::ResponseOneExerciseWithTryId],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(TryIdVerificationHook::class)->makePartial();
+
+    $context = contextWithUsername();
+
+    $tryId = (int) PlayExerciseSet::ResponseOneExercise[0]['try_id'];
+
+    $hook->expects('onRegisterTryId')
+        ->with(
+            capture(function (OnRegisterTryIdData $data) use ($context, $tryId) {
+                expect($data)
+                    ->getContext()->toBe($context)
+                    ->getTryId()->toBe($tryId);
+            })
+        )
+        ->once()->globally()->ordered();
+
+    $hook->expects('isValidTryId')
+        ->with(
+            capture(function (IsValidTryIdData $data) use ($context, $tryId) {
+                expect($data)
+                    ->getContext()->toBe($context)
+                    ->getTryId()->toBe($tryId);
+            })
+        )
+        ->once()->globally()->ordered()
+        ->andReturnTrue();
+
+    $hook->expects('onCatchInvalidTryId')->never();
+
+    $api->useHook($hook);
+
+    $api->request($context, json_encode(PlayExerciseSet::Request));
+    $api->request($context, json_encode(PlayExerciseSet::RequestWithTryId));
+});
+
 it('skips hook in readonly view correctly', function (string $path, mixed $response) {
     $client = mockHttpClient([
         ['path' => $path, 'body' => $response],

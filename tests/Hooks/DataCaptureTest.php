@@ -83,7 +83,36 @@ it('skips hook in readonly view correctly', function (string $path, mixed $respo
     ],
     'alternative exercise' => [
         PlayExerciseSet::UriReadonlyView,
-        PlayExerciseSet::ResponseAlternativeExerciseReadonlyView
+        PlayExerciseSet::ResponseAlternativeExerciseReadonlyView,
+    ],
+]);
+
+it('skips hook for requests with try_id correctly', function (string $path, mixed $response) {
+    $client = mockHttpClient([
+        ['path' => $path, 'body' => $response],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(DataCaptureHook::class)->makePartial();
+
+    $hook->expects('onRegisterExerciseTry')->never();
+
+    $api->useHook($hook);
+
+    $api->request(contextWithUsername(), json_encode(PlayExerciseSet::RequestWithTryId));
+})->with([
+    'default with try_id' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::ResponseWithTryId,
+    ],
+    'one exercise with try_id' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::ResponseOneExerciseWithTryId,
+    ],
+    'alternative exercise with try_id' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::ResponseAlternativeExerciseWithTryId,
     ],
 ]);
 

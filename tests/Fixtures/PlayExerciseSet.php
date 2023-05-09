@@ -18,6 +18,9 @@ class PlayExerciseSet
 
     public const UriWithoutLanguage = '/api/play/set/set_id/234/username/user1/view/student/arrays/true/payload/true';
 
+    public const UriWithTryId = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/arrays/true/payload/true';
+    public const UriWithTryIdWithoutLanguage = '/api/play/set/try_id/12345/username/user1/view/student/arrays/true/payload/true';
+
     public const Request = [
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'student',
@@ -49,6 +52,33 @@ class PlayExerciseSet
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'student',
         'set_id' => 234,
+    ];
+
+    public const RequestWithTryId = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'try_id' => 12345,
+    ];
+
+    public const RequestWithTryIdWithoutView = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'lang' => 'en',
+        'try_id' => 12345,
+    ];
+
+    public const RequestWithTryIdWithoutLanguage = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'try_id' => 12345,
+    ];
+
+    public const RequestWithSetIdAndTryId = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'set_id' => 234,
+        'try_id' => 12345,
     ];
 
     public const Response = [
@@ -105,6 +135,35 @@ class PlayExerciseSet
         [
             'exercise_id' => 67891,
             'try_id' => null,
+            'set_order' => '0',
+        ],
+    ];
+
+    public const ResponseWithTryId = [
+        [
+            'exercise_id' => 67890,
+            'try_id' => '12345',
+            'set_order' => '0',
+        ],
+        [
+            'exercise_id' => 67891,
+            'try_id' => '12346',
+            'set_order' => '1',
+        ],
+    ];
+
+    public const ResponseOneExerciseWithTryId = [
+        [
+            'exercise_id' => 67890,
+            'try_id' => '12345',
+            'set_order' => '0',
+        ],
+    ];
+
+    public const ResponseAlternativeExerciseWithTryId = [
+        [
+            'exercise_id' => 67891,
+            'try_id' => '12346',
             'set_order' => '0',
         ],
     ];

@@ -25,17 +25,32 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
     'readonly view' => [
         PlayExerciseSet::UriReadonlyView,
         PlayExerciseSet::RequestReadonlyView,
-        PlayExerciseSet::ResponseReadonlyView
+        PlayExerciseSet::ResponseReadonlyView,
     ],
     'without view' => [
         PlayExerciseSet::Uri,
         PlayExerciseSet::RequestWithoutView,
-        PlayExerciseSet::Response
+        PlayExerciseSet::Response,
     ],
     'without language' => [
         PlayExerciseSet::UriWithoutLanguage,
         PlayExerciseSet::RequestWithoutLanguage,
-        PlayExerciseSet::Response
+        PlayExerciseSet::Response,
+    ],
+    'with try_id' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::RequestWithTryId,
+        PlayExerciseSet::ResponseWithTryId,
+    ],
+    'with try_id without view' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::RequestWithTryIdWithoutView,
+        PlayExerciseSet::ResponseWithTryId,
+    ],
+    'with try_id without language' => [
+        PlayExerciseSet::UriWithTryIdWithoutLanguage,
+        PlayExerciseSet::RequestWithTryIdWithoutLanguage,
+        PlayExerciseSet::ResponseWithTryId,
     ],
 ]);
 
@@ -52,7 +67,8 @@ it('runs all callback methods correctly', function () {
                 ->getUser()->toBe($context->getUser())
                 ->getLanguage()->toBe(PlayExerciseSet::Request['lang'])
                 ->getView()->toBe(PlayExerciseSet::Request['view'])
-                ->getSetId()->toBe(PlayExerciseSet::Request['set_id']);
+                ->getSetId()->toBe(PlayExerciseSet::Request['set_id'])
+                ->usesTryId()->toBe(false);
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
             expect($response->getExerciseTries())->sequence(
@@ -83,10 +99,44 @@ it('runs all callback methods in readonly view correctly', function () {
                 ->getUser()->toBe($context->getUser())
                 ->getLanguage()->toBe(PlayExerciseSet::RequestReadonlyView['lang'])
                 ->getView()->toBe(PlayExerciseSet::RequestReadonlyView['view'])
-                ->getSetId()->toBe(PlayExerciseSet::RequestReadonlyView['set_id']);
+                ->getSetId()->toBe(PlayExerciseSet::RequestReadonlyView['set_id'])
+                ->usesTryId()->toBe(false);
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
             expect($response->getExerciseTries())->toBe([]);
+        },
+        context: $context,
+    );
+});
+
+it('runs all callback methods with try_id correctly', function () {
+    $context = contextWithUsername();
+
+    runsAllCallbackMethodsCorrectly(
+        uri: PlayExerciseSet::UriWithTryId,
+        request: PlayExerciseSet::RequestWithTryId,
+        response: PlayExerciseSet::ResponseWithTryId,
+        callbackName: PlayExerciseSetCallback::class,
+        requestCaptor: function (PlayExerciseSetRequest $request) use ($context) {
+            expect($request)
+                ->getUser()->toBe($context->getUser())
+                ->getLanguage()->toBe(PlayExerciseSet::RequestWithTryId['lang'])
+                ->getView()->toBe(PlayExerciseSet::RequestWithTryId['view'])
+                ->getTryId()->toBe(PlayExerciseSet::RequestWithTryId['try_id'])
+                ->getSetId()->toBe(null)
+                ->usesTryId()->toBe(true);
+        },
+        responseCaptor: function (PlayExerciseSetResponse $response) {
+            expect($response->getExerciseTries())->sequence(
+                fn ($value) => $value->toMatchArray([
+                    'exerciseId' => PlayExerciseSet::ResponseWithTryId[0]['exercise_id'],
+                    'tryId' => PlayExerciseSet::ResponseWithTryId[0]['try_id'],
+                ]),
+                fn ($value) => $value->toMatchArray([
+                    'exerciseId' => PlayExerciseSet::ResponseWithTryId[1]['exercise_id'],
+                    'tryId' => PlayExerciseSet::ResponseWithTryId[1]['try_id'],
+                ]),
+            );
         },
         context: $context,
     );
@@ -110,6 +160,14 @@ it('runs onFailure callback method correctly on invalid response', function () {
         response: '',
         callbackName: PlayExerciseSetCallback::class,
         exceptionName: InvalidJsonResponseException::class,
+        context: contextWithUsername(),
+    );
+});
+
+it('fails on invalid request with set_id and try_id', function () {
+    failsOnInvalidData(
+        request: PlayExerciseSet::RequestWithSetIdAndTryId,
+        message: "InvalidData 'setId and tryId supplied'",
         context: contextWithUsername(),
     );
 });

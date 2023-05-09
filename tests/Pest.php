@@ -18,6 +18,7 @@ use Sowiso\SDK\Data\OnFailureDataInterface;
 use Sowiso\SDK\Data\OnRequestDataInterface;
 use Sowiso\SDK\Data\OnResponseDataInterface;
 use Sowiso\SDK\Data\OnSuccessDataInterface;
+use Sowiso\SDK\Exceptions\InvalidDataException;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApi;
@@ -375,4 +376,20 @@ function failsOnMissingResponseData(
 
     expect(fn () => $api->request($context, json_encode($request)))
         ->toThrow(fn (MissingDataException $e) => expect($e)->getField()->toEqual($missingFieldName));
+}
+
+/**
+ * @param array $request
+ * @param string $message
+ * @param SowisoApiContext|null $context
+ */
+function failsOnInvalidData(
+    array $request,
+    string $message,
+    ?SowisoApiContext $context = null,
+): void {
+    $context ??= context();
+
+    expect(fn () => api()->request($context, json_encode($request)))
+        ->toThrow(fn (InvalidDataException $e) => expect($e)->getMessage()->toEqual($message));
 }

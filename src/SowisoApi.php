@@ -22,6 +22,7 @@ use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\EndpointInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
+use Sowiso\SDK\Exceptions\InvalidDataException;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\InvalidJsonRequestException;
@@ -120,6 +121,7 @@ class SowisoApi
      * @throws InvalidJsonRequestException when the API request has invalid JSON data
      * @throws InvalidJsonResponseException when the API response has invalid JSON data
      * @throws MissingDataException when the API request or response is missing required data
+     * @throws InvalidDataException when the API request or response contains invalid data
      * @throws ResponseErrorException when the API response has an error
      * @throws InvalidTryIdException when an invalid SOWISO try id is caught - thrown by {@link TryIdVerificationHook}
      * @throws SowisoApiException when any other error occurs

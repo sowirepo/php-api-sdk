@@ -49,12 +49,19 @@ abstract class DataCaptureHook implements HookInterface
                     return;
                 }
 
+                if ($data->getRequest()->usesTryId()) {
+                    return;
+                }
+
+                // Safe to cast to an int because when no try_id is used, the set_id was already validated
+                $setId = (int) $data->getRequest()->getSetId();
+
                 foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
                     $this->hook->onRegisterExerciseTry(
                         new OnRegisterExerciseTryData(
                             $data->getContext(),
                             $data->getPayload(),
-                            $data->getRequest()->getSetId(),
+                            $setId,
                             $exerciseTry['exerciseId'],
                             $exerciseTry['tryId'],
                         )
