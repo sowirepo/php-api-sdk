@@ -6,15 +6,19 @@ namespace Sowiso\SDK\Api\EvaluateAnswer\Data;
 
 use Exception;
 use Sowiso\SDK\Data\HasContext;
+use Sowiso\SDK\Data\HasPayload;
 use Sowiso\SDK\Data\OnFailureDataInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class EvaluateAnswerOnFailureData implements OnFailureDataInterface
 {
     use HasContext;
+    use HasPayload;
 
     public function __construct(
         protected SowisoApiContext $context,
+        protected SowisoApiPayload $payload,
         protected Exception $exception,
     ) {
     }

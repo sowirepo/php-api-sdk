@@ -26,6 +26,7 @@ use Sowiso\SDK\Hooks\TryIdVerification\Data\IsValidTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnCatchInvalidTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * The {@link TryIdVerificationHook} wraps all endpoints that deal with "Try IDs".
@@ -70,13 +71,13 @@ abstract class TryIdVerificationHook implements HookInterface
         ];
     }
 
-    final public function validateTryId(SowisoApiContext $context, int $tryId): void
+    final public function validateTryId(SowisoApiContext $context, SowisoApiPayload $payload, int $tryId): void
     {
-        if ($this->isValidTryId(new IsValidTryIdData($context, $tryId))) {
+        if ($this->isValidTryId(new IsValidTryIdData($context, $payload, $tryId))) {
             return;
         }
 
-        $this->onCatchInvalidTryId(new OnCatchInvalidTryIdData($context, $tryId));
+        $this->onCatchInvalidTryId(new OnCatchInvalidTryIdData($context, $payload, $tryId));
 
         throw new InvalidTryIdException($tryId);
     }
@@ -95,7 +96,13 @@ abstract class TryIdVerificationHook implements HookInterface
                 }
 
                 foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
-                    $this->hook->onRegisterTryId(new OnRegisterTryIdData($data->getContext(), $exerciseTry['tryId']));
+                    $this->hook->onRegisterTryId(
+                        new OnRegisterTryIdData(
+                            $data->getContext(),
+                            $data->getPayload(),
+                            $exerciseTry['tryId'],
+                        )
+                    );
                 }
             }
 
@@ -115,7 +122,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onRequest(EvaluateAnswerOnRequestData $data): void
             {
-                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }
         };
     }
@@ -129,7 +136,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onRequest(PlayExerciseOnRequestData $data): void
             {
-                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }
         };
     }
@@ -143,7 +150,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onRequest(PlayHintOnRequestData $data): void
             {
-                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }
         };
     }
@@ -157,7 +164,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onRequest(PlaySolutionOnRequestData $data): void
             {
-                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }
         };
     }
@@ -171,7 +178,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onRequest(StoreAnswerOnRequestData $data): void
             {
-                $this->hook->validateTryId($data->getContext(), $data->getRequest()->getTryId());
+                $this->hook->validateTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
             }
         };
     }

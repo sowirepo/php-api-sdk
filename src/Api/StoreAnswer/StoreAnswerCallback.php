@@ -16,6 +16,7 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * @implements CallbackInterface<StoreAnswerRequest, StoreAnswerResponse>
@@ -73,30 +74,30 @@ class StoreAnswerCallback implements CallbackInterface
     /**
      * @param StoreAnswerRequest $request
      */
-    final public function request(SowisoApiContext $context, RequestInterface $request): void
+    final public function request(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): void
     {
-        $this->onRequest(new StoreAnswerOnRequestData($context, $request));
+        $this->onRequest(new StoreAnswerOnRequestData($context, $payload, $request));
     }
 
     /**
      * @param StoreAnswerResponse $response
      */
-    final public function response(SowisoApiContext $context, ResponseInterface $response): void
+    final public function response(SowisoApiContext $context, SowisoApiPayload $payload, ResponseInterface $response): void
     {
-        $this->onResponse(new StoreAnswerOnResponseData($context, $response));
+        $this->onResponse(new StoreAnswerOnResponseData($context, $payload, $response));
     }
 
     /**
      * @param StoreAnswerRequest $request
      * @param StoreAnswerResponse $response
      */
-    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    final public function success(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request, ResponseInterface $response): void
     {
-        $this->onSuccess(new StoreAnswerOnSuccessData($context, $request, $response));
+        $this->onSuccess(new StoreAnswerOnSuccessData($context, $payload, $request, $response));
     }
 
-    final public function failure(SowisoApiContext $context, Exception $exception): void
+    final public function failure(SowisoApiContext $context, SowisoApiPayload $payload, Exception $exception): void
     {
-        $this->onFailure(new StoreAnswerOnFailureData($context, $exception));
+        $this->onFailure(new StoreAnswerOnFailureData($context, $payload, $exception));
     }
 }

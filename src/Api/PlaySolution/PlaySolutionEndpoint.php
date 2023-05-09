@@ -10,6 +10,7 @@ use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class PlaySolutionEndpoint extends AbstractEndpoint
 {
@@ -17,16 +18,18 @@ class PlaySolutionEndpoint extends AbstractEndpoint
 
     protected function createRequest(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
     ): RequestInterface {
-        return new PlaySolutionRequest($context, $data);
+        return new PlaySolutionRequest($context, $payload, $data);
     }
 
     protected function createResponse(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
         RequestInterface $request,
     ): ResponseInterface {
-        return new PlaySolutionResponse($context, $data, $request);
+        return new PlaySolutionResponse($context, $payload, $data, $request);
     }
 }

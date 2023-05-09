@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Sowiso\SDK\Endpoints\Http;
 
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 abstract class AbstractResponse implements ResponseInterface
 {
@@ -13,6 +14,7 @@ abstract class AbstractResponse implements ResponseInterface
      */
     public function __construct(
         protected SowisoApiContext $context,
+        protected SowisoApiPayload $payload,
         protected array $data,
         protected RequestInterface $request,
     ) {

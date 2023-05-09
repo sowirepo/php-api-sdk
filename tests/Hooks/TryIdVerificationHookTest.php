@@ -23,7 +23,9 @@ use Sowiso\SDK\Exceptions\InvalidTryIdException;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\IsValidTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
+use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
+use Sowiso\SDK\Tests\Fixtures\Payload;
 use Sowiso\SDK\Tests\Fixtures\PlayExercise;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
@@ -246,4 +248,30 @@ it('uses high priority for callbacks', function () {
     $hook = mock(TryIdVerificationHook::class);
 
     expect($hook)->playExerciseSetCallback()->priority()->toBe(CallbackPriority::HIGH);
+});
+
+it('can access additional payload in hook', function () {
+    $client = mockHttpClient([
+        ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(TryIdVerificationHook::class)->makePartial();
+
+    $hook->expects('onRegisterTryId')
+        ->with(
+            capture(function (OnRegisterTryIdData $data) {
+                expect($data)
+                    ->getPayload()->getData()->toBe(Payload::Test);
+            })
+        )
+        ->once()->globally()->ordered();
+
+    $api->useHook($hook);
+
+    $request = PlayExerciseSet::Request;
+    $request[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = Payload::Test;
+
+    $api->request(contextWithUsername(), json_encode($request));
 });

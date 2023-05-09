@@ -9,6 +9,7 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class PlaySolutionResponse extends AbstractResponse
 {
@@ -20,9 +21,9 @@ class PlaySolutionResponse extends AbstractResponse
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    public function __construct(SowisoApiContext $context, array $data, RequestInterface $request)
+    public function __construct(SowisoApiContext $context, SowisoApiPayload $payload, array $data, RequestInterface $request)
     {
-        parent::__construct($context, $data, $request);
+        parent::__construct($context, $payload, $data, $request);
 
         if (null === ($completed = $data['completed'] ?? null) || !is_bool($completed)) {
             throw MissingDataException::create(self::class, 'completed');

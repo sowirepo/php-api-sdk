@@ -16,6 +16,7 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * @implements CallbackInterface<EvaluateAnswerRequest, EvaluateAnswerResponse>
@@ -73,30 +74,30 @@ class EvaluateAnswerCallback implements CallbackInterface
     /**
      * @param EvaluateAnswerRequest $request
      */
-    final public function request(SowisoApiContext $context, RequestInterface $request): void
+    final public function request(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): void
     {
-        $this->onRequest(new EvaluateAnswerOnRequestData($context, $request));
+        $this->onRequest(new EvaluateAnswerOnRequestData($context, $payload, $request));
     }
 
     /**
      * @param EvaluateAnswerResponse $response
      */
-    final public function response(SowisoApiContext $context, ResponseInterface $response): void
+    final public function response(SowisoApiContext $context, SowisoApiPayload $payload, ResponseInterface $response): void
     {
-        $this->onResponse(new EvaluateAnswerOnResponseData($context, $response));
+        $this->onResponse(new EvaluateAnswerOnResponseData($context, $payload, $response));
     }
 
     /**
      * @param EvaluateAnswerRequest $request
      * @param EvaluateAnswerResponse $response
      */
-    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    final public function success(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request, ResponseInterface $response): void
     {
-        $this->onSuccess(new EvaluateAnswerOnSuccessData($context, $request, $response));
+        $this->onSuccess(new EvaluateAnswerOnSuccessData($context, $payload, $request, $response));
     }
 
-    final public function failure(SowisoApiContext $context, Exception $exception): void
+    final public function failure(SowisoApiContext $context, SowisoApiPayload $payload, Exception $exception): void
     {
-        $this->onFailure(new EvaluateAnswerOnFailureData($context, $exception));
+        $this->onFailure(new EvaluateAnswerOnFailureData($context, $payload, $exception));
     }
 }

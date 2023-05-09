@@ -9,6 +9,7 @@ use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\NoUserException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class PlayExerciseRequest extends AbstractRequest
 {
@@ -26,9 +27,9 @@ class PlayExerciseRequest extends AbstractRequest
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    public function __construct(SowisoApiContext $context, array $data)
+    public function __construct(SowisoApiContext $context, SowisoApiPayload $payload, array $data)
     {
-        parent::__construct($context, $data);
+        parent::__construct($context, $payload, $data);
 
         if (null === ($user = $context->getUser()) || trim($user) === '') {
             throw new NoUserException();

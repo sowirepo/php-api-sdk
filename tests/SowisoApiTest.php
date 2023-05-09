@@ -23,7 +23,10 @@ use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
+use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
+use Sowiso\SDK\Hooks\DataCapture\DataCaptureHook;
 use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
@@ -192,3 +195,45 @@ it('fails with invalid JSON response data', function (string $response) {
 
     api(httpClient: $client)->request(contextWithUsername(), $request);
 })->with(["", "{ / }", "<!DOCTYPE html> ..."])->throws(InvalidJsonResponseException::class);
+
+it('can handle no additional payload', function (array $request) {
+    $client = mockHttpClient([
+        ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(DataCaptureHook::class)->makePartial();
+
+    $hook->expects('onRegisterExerciseTry')
+        ->with(
+            capture(function (OnRegisterExerciseTryData $data) {
+                expect($data)
+                    ->getPayload()->getData()->toBeNull();
+            })
+        )
+        ->once()->globally()->ordered();
+
+    $api->useHook($hook);
+
+    $api->request(contextWithUsername(), json_encode($request));
+})->with(function () {
+    $requestWithNoPayload = PlayExerciseSet::Request;
+
+    yield "none" => [$requestWithNoPayload];
+
+    $requestWithEmptyStringPayload = PlayExerciseSet::Request;
+    $requestWithEmptyStringPayload[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = "";
+
+    yield "empty string" => [$requestWithEmptyStringPayload];
+
+    $requestWithEmptyArrayPayload = PlayExerciseSet::Request;
+    $requestWithEmptyArrayPayload[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = [];
+
+    yield "empty array" => [$requestWithEmptyArrayPayload];
+
+    $requestWithEmptyObjectPayload = PlayExerciseSet::Request;
+    $requestWithEmptyObjectPayload[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = new stdClass();
+
+    yield "empty object" => [$requestWithEmptyObjectPayload];
+});

@@ -53,6 +53,7 @@ abstract class DataCaptureHook implements HookInterface
                     $this->hook->onRegisterExerciseTry(
                         new OnRegisterExerciseTryData(
                             $data->getContext(),
+                            $data->getPayload(),
                             $data->getRequest()->getSetId(),
                             $exerciseTry['exerciseId'],
                             $exerciseTry['tryId'],

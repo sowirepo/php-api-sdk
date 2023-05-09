@@ -7,6 +7,7 @@ namespace Sowiso\SDK\Endpoints\Http;
 use JsonException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 abstract class AbstractRequest implements RequestInterface
 {
@@ -15,6 +16,7 @@ abstract class AbstractRequest implements RequestInterface
      */
     public function __construct(
         protected SowisoApiContext $context,
+        protected SowisoApiPayload $payload,
         protected array $data,
     ) {
     }

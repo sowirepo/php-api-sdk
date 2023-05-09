@@ -8,6 +8,8 @@ use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
 use Sowiso\SDK\Hooks\DataCapture\DataCaptureHook;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
+use Sowiso\SDK\SowisoApiConfiguration;
+use Sowiso\SDK\Tests\Fixtures\Payload;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
 it('runs hook correctly', function () {
@@ -150,4 +152,30 @@ it('uses higher priority for callbacks', function () {
     $hook = mock(DataCaptureHook::class);
 
     expect($hook)->playExerciseSetCallback()->priority()->toBe(CallbackPriority::HIGHER);
+});
+
+it('can access additional payload in hook', function () {
+    $client = mockHttpClient([
+        ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(DataCaptureHook::class)->makePartial();
+
+    $hook->expects('onRegisterExerciseTry')
+        ->with(
+            capture(function (OnRegisterExerciseTryData $data) {
+                expect($data)
+                    ->getPayload()->getData()->toBe(Payload::Test);
+            })
+        )
+        ->once()->globally()->ordered();
+
+    $api->useHook($hook);
+
+    $request = PlayExerciseSet::Request;
+    $request[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = Payload::Test;
+
+    $api->request(contextWithUsername(), json_encode($request));
 });

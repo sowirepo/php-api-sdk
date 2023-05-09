@@ -7,7 +7,9 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Hooks\ScoreCapture\Data\OnScoreData;
 use Sowiso\SDK\Hooks\ScoreCapture\Data\OnScoreSource;
 use Sowiso\SDK\Hooks\ScoreCapture\ScoreCaptureHook;
+use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
+use Sowiso\SDK\Tests\Fixtures\Payload;
 use Sowiso\SDK\Tests\Fixtures\PlayHint;
 use Sowiso\SDK\Tests\Fixtures\PlaySolution;
 
@@ -90,4 +92,32 @@ it('uses high priority for callbacks', function () {
     expect($hook)
         ->evaluateAnswerCallback()->priority()->toBe(CallbackPriority::HIGH)
         ->playSolutionCallback()->priority()->toBe(CallbackPriority::HIGH);
+});
+
+
+
+it('can access additional payload in hook', function () {
+    $client = mockHttpClient([
+        ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(ScoreCaptureHook::class)->makePartial();
+
+    $hook->expects('onScore')
+        ->with(
+            capture(function (OnScoreData $data) {
+                expect($data)
+                    ->getPayload()->getData()->toBe(Payload::Test);
+            })
+        )
+        ->once()->globally()->ordered();
+
+    $api->useHook($hook);
+
+    $request = EvaluateAnswer::Request;
+    $request[SowisoApiConfiguration::PAYLOAD_IDENTIFIER] = Payload::Test;
+
+    $api->request(contextWithUsername(), json_encode($request));
 });

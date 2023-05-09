@@ -73,6 +73,12 @@ Additionally, the context holds some data that is required by some endpoints:
 - **PlayExerciseSet**
     - `SowisoApiContext#user`
 
+#### Payload
+
+The SDK supports passing additional payload from every request into the callbacks and hooks.
+This additional payload can be specified by a `__additionalPayload` field in the request JSON.
+When no or an empty field is provided, the `SowisoApiPayload#getData()` method returns `null`.
+
 #### Exceptions
 
 ```php
@@ -320,6 +326,7 @@ properties:
 
 - `tryId` - The "Try ID" that was created or requested
 - `context` - The context object that's passed into the `SowisoApi#request()` method
+- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
 
 ```php
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
@@ -342,6 +349,7 @@ The `OnRegisterExerciseTryData` object contains the following properties:
 - `exerciseId` - The ID of the exercise itself
 - `tryId` - The "Try ID" of the "Exercise Try"
 - `context` - The context object that's passed into the `SowisoApi#request()` method
+- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
 
 ```php
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
@@ -361,6 +369,7 @@ the following properties:
 - `completed` - A boolean that indicates whether the answer is completed/final
 - `source` - A enum that indicates which endpoint has returned this score
 - `context` - The context object that's passed into the `SowisoApi#request()` method
+- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
 
 ```php
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here

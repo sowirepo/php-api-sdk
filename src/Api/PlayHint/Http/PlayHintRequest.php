@@ -8,6 +8,7 @@ use Sowiso\SDK\Endpoints\Http\AbstractRequest;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class PlayHintRequest extends AbstractRequest
 {
@@ -19,9 +20,9 @@ class PlayHintRequest extends AbstractRequest
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    public function __construct(SowisoApiContext $context, array $data)
+    public function __construct(SowisoApiContext $context, SowisoApiPayload $payload, array $data)
     {
-        parent::__construct($context, $data);
+        parent::__construct($context, $payload, $data);
 
         $language = is_string($language = $data['lang'] ?? null) ? $language : null;
 

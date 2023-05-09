@@ -9,6 +9,7 @@ use Sowiso\SDK\Endpoints\EndpointInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * @template TRequest of RequestInterface
@@ -31,14 +32,14 @@ interface CallbackInterface
      * @param TRequest $request
      * @return void
      */
-    public function request(SowisoApiContext $context, RequestInterface $request): void;
+    public function request(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): void;
 
     /**
      * @param SowisoApiContext $context
      * @param TResponse $response
      * @return void
      */
-    public function response(SowisoApiContext $context, ResponseInterface $response): void;
+    public function response(SowisoApiContext $context, SowisoApiPayload $payload, ResponseInterface $response): void;
 
     /**
      * @param SowisoApiContext $context
@@ -46,12 +47,12 @@ interface CallbackInterface
      * @param TResponse $response
      * @return void
      */
-    public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void;
+    public function success(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request, ResponseInterface $response): void;
 
     /**
      * @param SowisoApiContext $context
      * @param Exception $exception
      * @return void
      */
-    public function failure(SowisoApiContext $context, Exception $exception): void;
+    public function failure(SowisoApiContext $context, SowisoApiPayload $payload, Exception $exception): void;
 }

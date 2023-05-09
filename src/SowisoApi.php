@@ -143,7 +143,9 @@ class SowisoApi
             ->withHttpStreamFactory($this->getHttpStreamFactory())
             ->withCallbacks($this->callbacks[get_class($endpoint)] ?? []);
 
-        $response = $endpoint->call($context, $json);
+        $payload = SowisoApiPayload::createFromRequest($json);
+
+        $response = $endpoint->call($context, $payload, $json);
 
         try {
             return json_encode($response, flags: JSON_THROW_ON_ERROR);

@@ -12,6 +12,7 @@ use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 interface EndpointInterface
 {
@@ -19,7 +20,7 @@ interface EndpointInterface
      * @param array<string, mixed> $data
      * @return array<string, mixed>
      */
-    public function call(SowisoApiContext $context, array $data): array;
+    public function call(SowisoApiContext $context, SowisoApiPayload $payload, array $data): array;
 
     public function withConfiguration(SowisoApiConfiguration $configuration): self;
 

@@ -16,6 +16,7 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * @implements CallbackInterface<PlaySolutionRequest, PlaySolutionResponse>
@@ -73,30 +74,30 @@ class PlaySolutionCallback implements CallbackInterface
     /**
      * @param PlaySolutionRequest $request
      */
-    final public function request(SowisoApiContext $context, RequestInterface $request): void
+    final public function request(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): void
     {
-        $this->onRequest(new PlaySolutionOnRequestData($context, $request));
+        $this->onRequest(new PlaySolutionOnRequestData($context, $payload, $request));
     }
 
     /**
      * @param PlaySolutionResponse $response
      */
-    final public function response(SowisoApiContext $context, ResponseInterface $response): void
+    final public function response(SowisoApiContext $context, SowisoApiPayload $payload, ResponseInterface $response): void
     {
-        $this->onResponse(new PlaySolutionOnResponseData($context, $response));
+        $this->onResponse(new PlaySolutionOnResponseData($context, $payload, $response));
     }
 
     /**
      * @param PlaySolutionRequest $request
      * @param PlaySolutionResponse $response
      */
-    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    final public function success(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request, ResponseInterface $response): void
     {
-        $this->onSuccess(new PlaySolutionOnSuccessData($context, $request, $response));
+        $this->onSuccess(new PlaySolutionOnSuccessData($context, $payload, $request, $response));
     }
 
-    final public function failure(SowisoApiContext $context, Exception $exception): void
+    final public function failure(SowisoApiContext $context, SowisoApiPayload $payload, Exception $exception): void
     {
-        $this->onFailure(new PlaySolutionOnFailureData($context, $exception));
+        $this->onFailure(new PlaySolutionOnFailureData($context, $payload, $exception));
     }
 }

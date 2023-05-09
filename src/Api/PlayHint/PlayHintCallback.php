@@ -16,6 +16,7 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * @implements CallbackInterface<PlayHintRequest, PlayHintResponse>
@@ -73,30 +74,30 @@ class PlayHintCallback implements CallbackInterface
     /**
      * @param PlayHintRequest $request
      */
-    final public function request(SowisoApiContext $context, RequestInterface $request): void
+    final public function request(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): void
     {
-        $this->onRequest(new PlayHintOnRequestData($context, $request));
+        $this->onRequest(new PlayHintOnRequestData($context, $payload, $request));
     }
 
     /**
      * @param PlayHintResponse $response
      */
-    final public function response(SowisoApiContext $context, ResponseInterface $response): void
+    final public function response(SowisoApiContext $context, SowisoApiPayload $payload, ResponseInterface $response): void
     {
-        $this->onResponse(new PlayHintOnResponseData($context, $response));
+        $this->onResponse(new PlayHintOnResponseData($context, $payload, $response));
     }
 
     /**
      * @param PlayHintRequest $request
      * @param PlayHintResponse $response
      */
-    final public function success(SowisoApiContext $context, RequestInterface $request, ResponseInterface $response): void
+    final public function success(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request, ResponseInterface $response): void
     {
-        $this->onSuccess(new PlayHintOnSuccessData($context, $request, $response));
+        $this->onSuccess(new PlayHintOnSuccessData($context, $payload, $request, $response));
     }
 
-    final public function failure(SowisoApiContext $context, Exception $exception): void
+    final public function failure(SowisoApiContext $context, SowisoApiPayload $payload, Exception $exception): void
     {
-        $this->onFailure(new PlayHintOnFailureData($context, $exception));
+        $this->onFailure(new PlayHintOnFailureData($context, $payload, $exception));
     }
 }

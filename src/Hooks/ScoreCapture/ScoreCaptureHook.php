@@ -53,6 +53,7 @@ abstract class ScoreCaptureHook implements HookInterface
                 $this->hook->onScore(
                     new OnScoreData(
                         context: $data->getContext(),
+                        payload: $data->getPayload(),
                         source: OnScoreSource::EVALUATE_ANSWER,
                         tryId: $data->getRequest()->getTryId(),
                         completed: $data->getResponse()->isCompleted(),
@@ -80,6 +81,7 @@ abstract class ScoreCaptureHook implements HookInterface
                 $this->hook->onScore(
                     new OnScoreData(
                         context: $data->getContext(),
+                        payload: $data->getPayload(),
                         source: OnScoreSource::PLAY_SOLUTION,
                         tryId: $data->getRequest()->getTryId(),
                         completed: $data->getResponse()->isCompleted(),

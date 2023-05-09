@@ -9,33 +9,27 @@ use Sowiso\SDK\Api\StoreAnswer\Http\StoreAnswerResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
-use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class StoreAnswerEndpoint extends AbstractEndpoint
 {
     public const NAME = "store/answer";
 
-    /**
-     * @param array<string, mixed> $data
-     * @throws SowisoApiException
-     */
     protected function createRequest(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
     ): RequestInterface {
-        return new StoreAnswerRequest($context, $data);
+        return new StoreAnswerRequest($context, $payload, $data);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     * @throws SowisoApiException
-     */
     protected function createResponse(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
         RequestInterface $request,
     ): ResponseInterface {
-        return new StoreAnswerResponse($context, $data, $request);
+        return new StoreAnswerResponse($context, $payload, $data, $request);
     }
 }

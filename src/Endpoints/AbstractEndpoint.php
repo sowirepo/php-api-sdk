@@ -14,12 +14,12 @@ use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\FetchingFailedException;
-use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\ResponseErrorException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 abstract class AbstractEndpoint implements EndpointInterface
 {
@@ -40,11 +40,11 @@ abstract class AbstractEndpoint implements EndpointInterface
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    public function call(SowisoApiContext $context, array $data): array
+    public function call(SowisoApiContext $context, SowisoApiPayload $payload, array $data): array
     {
         try {
-            $request = $this->createRequest($context, $data);
-            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->request($context, $request));
+            $request = $this->createRequest($context, $payload, $data);
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->request($context, $payload, $request));
 
             $uri = rtrim($this->configuration->getBaseUrl(), '/') . $request->getUri();
 
@@ -84,11 +84,11 @@ abstract class AbstractEndpoint implements EndpointInterface
                 throw new ResponseErrorException($httpStatusMessage ?? 'Unknown', $httpStatusCode);
             }
 
-            $response = $this->createResponse($context, $fetchedData, $request);
-            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->response($context, $response));
+            $response = $this->createResponse($context, $payload, $fetchedData, $request);
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->response($context, $payload, $response));
         } catch (SowisoApiException|JsonException|ClientExceptionInterface|Exception $e) {
             // @phpstan-ignore-next-line
-            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->failure($context, $e));
+            $this->runCallbacks(fn (CallbackInterface $callback) => $callback->failure($context, $payload, $e));
 
             if ($e instanceof SowisoApiException) {
                 throw $e;
@@ -99,7 +99,7 @@ abstract class AbstractEndpoint implements EndpointInterface
             throw new FetchingFailedException($e);
         }
 
-        $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $request, $response));
+        $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $payload, $request, $response));
 
         return $fetchedData;
     }
@@ -110,6 +110,7 @@ abstract class AbstractEndpoint implements EndpointInterface
      */
     abstract protected function createRequest(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
     ): RequestInterface;
 
@@ -119,6 +120,7 @@ abstract class AbstractEndpoint implements EndpointInterface
      */
     abstract protected function createResponse(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
         RequestInterface $request,
     ): ResponseInterface;

@@ -6,6 +6,7 @@ namespace Sowiso\SDK\Data;
 
 use Exception;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 interface OnFailureDataInterface
 {
@@ -13,6 +14,11 @@ interface OnFailureDataInterface
      * @return SowisoApiContext
      */
     public function getContext(): SowisoApiContext;
+
+    /**
+     * @return SowisoApiPayload
+     */
+    public function getPayload(): SowisoApiPayload;
 
     /**
      * @return Exception

@@ -9,33 +9,27 @@ use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
 use Sowiso\SDK\Endpoints\AbstractEndpoint;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
-use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 
 class EvaluateAnswerEndpoint extends AbstractEndpoint
 {
     public const NAME = "evaluate/answer";
 
-    /**
-     * @param array<string, mixed> $data
-     * @throws SowisoApiException
-     */
     protected function createRequest(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
     ): RequestInterface {
-        return new EvaluateAnswerRequest($context, $data);
+        return new EvaluateAnswerRequest($context, $payload, $data);
     }
 
-    /**
-     * @param array<string, mixed> $data
-     * @throws SowisoApiException
-     */
     protected function createResponse(
         SowisoApiContext $context,
+        SowisoApiPayload $payload,
         array $data,
         RequestInterface $request,
     ): ResponseInterface {
-        return new EvaluateAnswerResponse($context, $data, $request);
+        return new EvaluateAnswerResponse($context, $payload, $data, $request);
     }
 }
