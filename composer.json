@@ -35,8 +35,8 @@
         "friendsofphp/php-cs-fixer": "^3.13",
         "guzzlehttp/guzzle": "^7.5",
         "nyholm/psr7": "^1.5",
-        "pestphp/pest": "^2.6",
-        "pestphp/pest-plugin-mock": "^2.0",
+        "pestphp/pest": "^1.22",
+        "pestphp/pest-plugin-mock": "^1.0",
         "php-http/mock-client": "^1.5",
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-strict-rules": "^1.5"
