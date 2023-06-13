@@ -9,10 +9,10 @@ use Throwable;
 
 final class InvalidJsonResponseException extends InvalidArgumentException implements SowisoApiException
 {
-    public function __construct(?Throwable $cause = null)
+    public function __construct(string $message, ?Throwable $cause = null)
     {
         parent::__construct(
-            message: 'InvalidJsonResponse',
+            message: 'InvalidJsonResponse ("' . $message . '")',
             previous: $cause,
         );
     }

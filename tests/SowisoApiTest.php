@@ -186,15 +186,20 @@ it('fails with invalid JSON request data', function (string $request) {
     api()->request(context(), $request);
 })->with(["", "{ / }"])->throws(InvalidJsonRequestException::class);
 
-it('fails with invalid JSON response data', function (string $response) {
+it('fails with invalid JSON response data', function (string $response, string $expectedError) {
     $client = mockHttpClient([
-        ['path' => PlayExerciseSet::Uri, 'body' => $response],
+        ['path' => PlayExerciseSet::Uri, 'body' => $response, 'statusCode' => 500, 'json' => false],
     ]);
 
     $request = json_encode(PlayExerciseSet::Request);
 
-    api(httpClient: $client)->request(contextWithUsername(), $request);
-})->with(["", "{ / }", "<!DOCTYPE html> ..."])->throws(InvalidJsonResponseException::class);
+    expect(fn () => api(httpClient: $client)->request(contextWithUsername(), $request))
+        ->toThrow(fn (InvalidJsonResponseException $exception) => expect($exception->getMessage())->toBe($expectedError));
+})->with([
+    ['', 'InvalidJsonResponse ("Unknown Server Error")'],
+    ['{ / }', 'InvalidJsonResponse ("{ / }")'],
+    ['<!DOCTYPE html> ...', 'InvalidJsonResponse ("<!DOCTYPE html> ...")'],
+]);
 
 it('can handle no additional payload', function (array $request) {
     $client = mockHttpClient([

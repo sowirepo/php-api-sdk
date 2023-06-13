@@ -115,7 +115,7 @@ function contextWithUsername(?string $user = 'user1'): SowisoApiContext
 }
 
 /**
- * @param array<array{path: string, body: mixed, statusCode?: int}> $responses
+ * @param array<array{path: string, body: mixed, statusCode?: int, json?: bool}> $responses
  * @return HttpClient
  */
 function mockHttpClient(array $responses): HttpClient
@@ -123,11 +123,14 @@ function mockHttpClient(array $responses): HttpClient
     $client = new Client();
 
     foreach ($responses as $response) {
+        $json = is_bool($json = $response['json'] ?? true) ? $json : true;
+        $body = $json ? json_encode($response['body']) : $response['body'];
+
         $client->on(
             requestMatcher: new RequestMatcher($response['path']),
             result: mock(ResponseInterface::class)->expect(
                 getStatusCode: fn () => $response['statusCode'] ?? 200,
-                getBody: fn () => Stream::create(json_encode($response['body'])),
+                getBody: fn () => Stream::create($body),
             )
         );
     }
@@ -302,7 +305,7 @@ function runsOnFailureCallbackMethodCorrectlyOnException(
     ?SowisoApiContext $context = null,
 ): void {
     $client = mockHttpClient([
-        ['path' => $uri, 'body' => $response],
+        ['path' => $uri, 'body' => $response, 'statusCode' => 500],
     ]);
 
     $api = api(httpClient: $client);

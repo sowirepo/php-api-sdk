@@ -59,41 +59,39 @@ abstract class AbstractEndpoint implements EndpointInterface
             }
 
             $httpResponse = $this->httpClient->sendRequest($httpRequest);
-            $httpStatusCode = $httpResponse->getStatusCode();
-            $httpBody = (string) $httpResponse->getBody();
 
-            if ($httpBody === '') {
-                throw new InvalidJsonResponseException();
+            $responseStatusCode = $httpResponse->getStatusCode();
+            $responseBody = (string) $httpResponse->getBody();
+
+            try {
+                $responseJson = $this->parseResponseJson($responseBody);
+            } catch (JsonException $e) {
+                throw new InvalidJsonResponseException($responseBody, $e);
             }
 
-            /** @var array<string, mixed>|bool|null $fetchedData */
-            $fetchedData = json_decode(
-                $httpBody,
-                associative: true,
-                flags: JSON_THROW_ON_ERROR,
-            );
+            if ($responseStatusCode !== 200) {
+                $responseErrorMessage = $responseJson['error'] ?? null;
+                $responseErrorMessage = is_string($responseErrorMessage) ? $responseErrorMessage : null;
 
-            if (!is_array($fetchedData)) {
-                throw new InvalidJsonResponseException();
+                if ($responseErrorMessage !== null) {
+                    throw new ResponseErrorException($responseErrorMessage, $responseStatusCode);
+                }
+
+                if ($responseBody !== '') {
+                    throw new InvalidJsonResponseException($responseBody);
+                }
+
+                throw new InvalidJsonResponseException('Unknown Server Error');
             }
 
-            if ($httpStatusCode !== 200) {
-                $httpStatusMessage = $fetchedData['error'] ?? null;
-                $httpStatusMessage = is_string($httpStatusMessage) ? $httpStatusMessage : null;
-
-                throw new ResponseErrorException($httpStatusMessage ?? 'Unknown', $httpStatusCode);
-            }
-
-            $response = $this->createResponse($context, $payload, $fetchedData, $request);
+            $response = $this->createResponse($context, $payload, $responseJson, $request);
             $this->runCallbacks(fn (CallbackInterface $callback) => $callback->response($context, $payload, $response));
-        } catch (SowisoApiException|JsonException|ClientExceptionInterface|Exception $e) {
+        } catch (SowisoApiException|ClientExceptionInterface|Exception $e) {
             // @phpstan-ignore-next-line
             $this->runCallbacks(fn (CallbackInterface $callback) => $callback->failure($context, $payload, $e));
 
             if ($e instanceof SowisoApiException) {
                 throw $e;
-            } elseif ($e instanceof JsonException) {
-                throw new InvalidJsonResponseException($e);
             }
 
             throw new FetchingFailedException($e);
@@ -101,7 +99,31 @@ abstract class AbstractEndpoint implements EndpointInterface
 
         $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $payload, $request, $response));
 
-        return $fetchedData;
+        return $responseJson;
+    }
+
+    /**
+     * @return array<string, mixed>
+     * @throws JsonException
+     */
+    private function parseResponseJson(string $body): array
+    {
+        if ($body === '') {
+            return [];
+        }
+
+        /** @var array<string, mixed>|bool|null $json */
+        $json = json_decode(
+            $body,
+            associative: true,
+            flags: JSON_THROW_ON_ERROR,
+        );
+
+        if (!is_array($json)) {
+            return [];
+        }
+
+        return $json;
     }
 
     /**
