@@ -41,6 +41,9 @@
         "phpstan/phpstan": "^1.10",
         "phpstan/phpstan-strict-rules": "^1.5"
     },
+    "conflict": {
+        "mockery/mockery": ">1.6"
+    },
     "autoload": {
         "psr-4": {
             "Sowiso\\SDK\\": "src/"
