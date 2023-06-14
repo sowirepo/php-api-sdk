@@ -158,6 +158,7 @@ function capture(callable $dispatch): Closure
  * @param array $request
  * @param array $response
  * @param SowisoApiContext|null $context
+ * @param callable|null $useApi
  * @return void
  * @throws SowisoApiException
  */
@@ -167,6 +168,7 @@ function makesRequestCorrectly(
     array $request,
     mixed $response,
     ?SowisoApiContext $context = null,
+    ?callable $useApi = null,
 ): void {
     $context ??= context();
 
@@ -175,7 +177,13 @@ function makesRequestCorrectly(
         ['path' => $uri, 'body' => $response],
     ]);
 
-    api(httpClient: $client)->request($context, json_encode($request));
+    $api = api(httpClient: $client);
+
+    if ($useApi !== null) {
+        $useApi($api);
+    }
+
+    $api->request($context, json_encode($request));
 
     $httpRequest = $client->getLastRequest();
 

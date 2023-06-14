@@ -12,7 +12,12 @@ use Sowiso\SDK\SowisoApiPayload;
 
 class EvaluateAnswerRequest extends AbstractRequest
 {
+    private const MODE_PRACTICE = 'practice';
+    private const MODE_TEST = 'test';
+
     private int $tryId;
+
+    private ?string $mode;
 
     /**
      * @param array<string, mixed> $data
@@ -27,11 +32,21 @@ class EvaluateAnswerRequest extends AbstractRequest
         }
 
         $this->tryId = $tryId;
+        $this->mode = null;
     }
 
     public function getUri(): string
     {
-        return sprintf('/api/evaluate/answer/try_id/%d/view/student', $this->tryId);
+        $uri = '/api/evaluate/answer';
+
+        $uri .= sprintf('/try_id/%d', $this->tryId);
+        $uri .= '/view/student';
+
+        if ($this->mode === self::MODE_TEST) {
+            $uri .= '/mode/test_strict';
+        }
+
+        return $uri;
     }
 
     public function getMethod(): string
@@ -47,5 +62,15 @@ class EvaluateAnswerRequest extends AbstractRequest
     public function getTryId(): int
     {
         return $this->tryId;
+    }
+
+    public function getMode(): string
+    {
+        return $this->mode ?? self::MODE_PRACTICE;
+    }
+
+    public function setTestMode(bool $testMode = true): void
+    {
+        $this->mode = $testMode ? self::MODE_TEST : null;
     }
 }

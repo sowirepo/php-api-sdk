@@ -53,7 +53,7 @@ abstract class TryIdVerificationHook implements HookInterface
      * This method is called before requests that contain a "Try ID" are passed to the API.
      *
      * @param IsValidTryIdData $data containing the current context and the "Try ID"
-     * whether the "Try ID" is valid
+     * @return bool whether the "Try ID" is valid
      */
     abstract public function isValidTryId(IsValidTryIdData $data): bool;
 

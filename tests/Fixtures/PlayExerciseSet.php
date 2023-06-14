@@ -21,6 +21,10 @@ class PlayExerciseSet
     public const UriWithTryId = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/arrays/true/payload/true';
     public const UriWithTryIdWithoutLanguage = '/api/play/set/try_id/12345/username/user1/view/student/arrays/true/payload/true';
 
+    public const UriInTestMode = '/api/play/set/set_id/234/username/user1/lang/en/view/student/mode/test_strict/arrays/true/payload/true';
+
+    public const UriWithTryIdInTestMode = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/mode/test_strict/single_exercise/true/arrays/true/payload/true';
+
     public const Request = [
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'student',

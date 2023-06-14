@@ -6,6 +6,11 @@ use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetRequest;
 use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetResponse;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseSetBePlayedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBeEvaluatedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBePlayedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\TestModeHook;
+use Sowiso\SDK\SowisoApi;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
 it('makes request correctly', function (string $uri, array $request, mixed $response) {
@@ -53,6 +58,58 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlayExerciseSet::ResponseWithTryId,
     ],
 ]);
+
+it('makes request correctly in "test" mode', function () {
+    makesRequestCorrectly(
+        method: 'GET',
+        uri: PlayExerciseSet::UriInTestMode,
+        request: PlayExerciseSet::Request,
+        response: PlayExerciseSet::Response,
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useHook(new class () extends TestModeHook {
+            public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool
+            {
+                return true;
+            }
+
+            public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
+            {
+                return false; // Not needed for request with set_id
+            }
+
+            public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool
+            {
+                return false; // Not needed in the PlayExerciseSetEndpoint
+            }
+        }),
+    );
+});
+
+it('makes request with try_id correctly in "test" mode', function () {
+    makesRequestCorrectly(
+        method: 'GET',
+        uri: PlayExerciseSet::UriWithTryIdInTestMode,
+        request: PlayExerciseSet::RequestWithTryId,
+        response: PlayExerciseSet::ResponseWithTryId,
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useHook(new class () extends TestModeHook {
+            public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool
+            {
+                return false; // Not needed for request with try_id
+            }
+
+            public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
+            {
+                return true;
+            }
+
+            public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool
+            {
+                return false; // Not needed in the PlayExerciseSetEndpoint
+            }
+        }),
+    );
+});
 
 it('runs all callback methods correctly', function () {
     $context = contextWithUsername();

@@ -343,7 +343,7 @@ $api->useCallback(new class extends StoreAnswerCallback {
 The SDK provides so-called hooks, which _hook into_ one or more callbacks. They are used for providing some
 SOWISO-specific functionality.
 
-#### TryIdVerification
+### TryIdVerification
 
 The `TryIdVerification` hook wraps all endpoints that deal with "Try IDs". These IDs are used by SOWISO to distinguish
 between different attempts (_tries_) of exercises.
@@ -351,7 +351,7 @@ between different attempts (_tries_) of exercises.
 The `onRegisterTryId()` method is called when a new "Try ID" is returned by the API (e.g., from the `PlayExerciseSet`
 endpoint). For any consecutive request that depends on a "Try ID" (e.g., to the `EvaluateAnswer` endpoint),
 the `isValidTryId()` method should return _false_ when the "Try ID" wasn't registered to the current user. In that case,
-the request is aborted and the `onCatchInvalidTryId()` method is called. All data objects contains the following
+the request is aborted and the `onCatchInvalidTryId()` method is called. All data objects contain the following
 properties:
 
 - `tryId` - The "Try ID" that was created or requested
@@ -389,7 +389,7 @@ $api->useHook(new class extends DataCaptureHook {
 });
 ```
 
-#### ScoreCapture
+### ScoreCapture
 
 The `ScoreCapture` hook wraps all endpoints that return some form of score for a user. The `OnScoreData` object contains
 the following properties:
@@ -406,5 +406,27 @@ $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is 
 
 $api->useHook(new class extends ScoreCaptureHook {
     public function onScore(OnScoreData $data): void {}
+});
+```
+
+### TestMode
+
+The `TestMode` hook simplifies everything related to playing and evaluating in "test" mode.
+By implementing and using this hook, you can decide if a certain "Exercise Set" or "Exercise Try" should use the "test" mode.
+
+_Note: When an "Exercise Set" was played in "test" mode, the returned "Exercise Tries" should also be evaluated in "test" mode._
+
+All data objects contain the following properties:
+
+- `context` - The context object that's passed into the `SowisoApi#request()` method
+- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useHook(new class extends TestModeHook {
+    public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool {}
+    public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool {}
+    public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool {}
 });
 ```

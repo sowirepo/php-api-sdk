@@ -12,6 +12,8 @@ class EvaluateAnswer
 
     public const UriAlternative = '/api/evaluate/answer/try_id/12346/view/student';
 
+    public const UriInTestMode = '/api/evaluate/answer/try_id/12345/view/student/mode/test_strict';
+
     public const Request = [
         '__endpoint' => EvaluateAnswerEndpoint::NAME,
         'try_id' => 12345,

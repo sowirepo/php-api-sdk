@@ -6,6 +6,11 @@ use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerRequest;
 use Sowiso\SDK\Api\EvaluateAnswer\Http\EvaluateAnswerResponse;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseSetBePlayedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBeEvaluatedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBePlayedInTestModeData;
+use Sowiso\SDK\Hooks\TestMode\TestModeHook;
+use Sowiso\SDK\SowisoApi;
 use Sowiso\SDK\Tests\Fixtures\EvaluateAnswer;
 
 it('makes request correctly', function () {
@@ -14,6 +19,32 @@ it('makes request correctly', function () {
         uri: EvaluateAnswer::Uri,
         request: EvaluateAnswer::Request,
         response: EvaluateAnswer::Response,
+    );
+});
+
+it('makes request correctly in "test" mode', function () {
+    makesRequestCorrectly(
+        method: 'POST',
+        uri: EvaluateAnswer::UriInTestMode,
+        request: EvaluateAnswer::Request,
+        response: EvaluateAnswer::Response,
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useHook(new class () extends TestModeHook {
+            public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool
+            {
+                return false; // Not needed in the PlayExerciseSetEndpoint
+            }
+
+            public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
+            {
+                return false; // Not needed in the PlayExerciseSetEndpoint
+            }
+
+            public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool
+            {
+                return true;
+            }
+        }),
     );
 });
 

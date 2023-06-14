@@ -16,12 +16,16 @@ class PlayExerciseSetRequest extends AbstractRequest
 {
     private const VIEW_STUDENT = 'student';
     private const VIEW_READONLY = 'readonly';
+    private const MODE_PRACTICE = 'practice';
+    private const MODE_TEST = 'test';
 
     private string $user;
 
     private ?string $language;
 
     private ?string $view;
+
+    private ?string $mode;
 
     private ?int $setId;
 
@@ -56,6 +60,7 @@ class PlayExerciseSetRequest extends AbstractRequest
         $this->user = $user;
         $this->language = $language;
         $this->view = $view;
+        $this->mode = null;
         $this->setId = $setId;
         $this->tryId = $tryId;
     }
@@ -78,6 +83,14 @@ class PlayExerciseSetRequest extends AbstractRequest
 
         $uri .= sprintf('/view/%s', $this->view ?? self::VIEW_STUDENT);
 
+        if ($this->mode === self::MODE_TEST) {
+            $uri .= '/mode/test_strict';
+        }
+
+        if ($this->mode === self::MODE_TEST && $this->usesTryId()) {
+            $uri .= '/single_exercise/true';
+        }
+
         $uri .= '/arrays/true';
         $uri .= '/payload/true';
 
@@ -99,6 +112,11 @@ class PlayExerciseSetRequest extends AbstractRequest
         return $this->view ?? self::VIEW_STUDENT;
     }
 
+    public function getMode(): string
+    {
+        return $this->mode ?? self::MODE_PRACTICE;
+    }
+
     public function getSetId(): ?int
     {
         return $this->setId;
@@ -107,6 +125,11 @@ class PlayExerciseSetRequest extends AbstractRequest
     public function getTryId(): ?int
     {
         return $this->tryId;
+    }
+
+    public function setTestMode(bool $testMode = true): void
+    {
+        $this->mode = $testMode ? self::MODE_TEST : null;
     }
 
     public function isReadonlyView(): bool
