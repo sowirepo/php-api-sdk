@@ -22,6 +22,7 @@ class OnScoreData
         protected string $source,
         protected int $tryId,
         protected bool $completed,
+        protected bool $setCompleted,
         protected float $score,
     ) {
     }
@@ -34,6 +35,11 @@ class OnScoreData
     public function isCompleted(): bool
     {
         return $this->completed;
+    }
+
+    public function isSetCompleted(): bool
+    {
+        return $this->setCompleted;
     }
 
     public function getScore(): float

@@ -25,18 +25,29 @@ class EvaluateAnswer
     ];
 
     public const Response = [
-        'exercise_evaluation' => [
-            'completed' => true,
-            'score' => 9.9,
-            'hints' => 2,
-            'solutions' => 1,
-        ],
-        'answer_evaluation' => [
-            'index' => 1,
-            'completed' => true,
-            'passed' => true,
-            'score' => 2.7,
-            'feedback' => 'Great!',
-        ],
+        'set_completed' => false,
+        'exercise_evaluation' => self::ResponseExerciseEvaluation,
+        'answer_evaluation' => self::ResponseAnswerEvaluation,
+    ];
+
+    public const ResponseForCompletedSet = [
+        'set_completed' => true,
+        'exercise_evaluation' => self::ResponseExerciseEvaluation,
+        'answer_evaluation' => self::ResponseAnswerEvaluation,
+    ];
+
+    private const ResponseExerciseEvaluation = [
+        'completed' => true,
+        'score' => 9.9,
+        'hints' => 2,
+        'solutions' => 1,
+    ];
+
+    private const ResponseAnswerEvaluation = [
+        'index' => 1,
+        'completed' => true,
+        'passed' => true,
+        'score' => 2.7,
+        'feedback' => 'Great!',
     ];
 }

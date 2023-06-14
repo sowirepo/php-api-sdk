@@ -25,6 +25,16 @@ class PlaySolution
 
     public const Response = [
         'completed' => true,
+        'set_completed' => false,
+        'score' => 0.0,
+        'followup' => 'This is the <b>follow-up</b> text!',
+        'solution' => 'This is the <b>solution</b> text!',
+        'solution_extended' => 'This is the <b>solution_extended</b> text!',
+    ];
+
+    public const ResponseForCompletedSet = [
+        'completed' => true,
+        'set_completed' => true,
         'score' => 0.0,
         'followup' => 'This is the <b>follow-up</b> text!',
         'solution' => 'This is the <b>solution</b> text!',

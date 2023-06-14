@@ -15,6 +15,8 @@ class EvaluateAnswerResponse extends AbstractResponse
 {
     private bool $completed;
 
+    private bool $setCompleted;
+
     private float $score;
 
     /**
@@ -32,17 +34,27 @@ class EvaluateAnswerResponse extends AbstractResponse
             throw MissingDataException::create(self::class, 'completed');
         }
 
+        if (null === ($setCompleted = $data['set_completed'] ?? null) || !is_bool($setCompleted)) {
+            throw MissingDataException::create(self::class, 'setCompleted');
+        }
+
         if (null === ($score = $exerciseEvaluation['score'] ?? null) || !is_numeric($score)) {
             throw MissingDataException::create(self::class, 'score');
         }
 
         $this->completed = $completed;
+        $this->setCompleted = $setCompleted;
         $this->score = (float) $score;
     }
 
     public function isCompleted(): bool
     {
         return $this->completed;
+    }
+
+    public function isSetCompleted(): bool
+    {
+        return $this->setCompleted;
     }
 
     public function getScore(): float

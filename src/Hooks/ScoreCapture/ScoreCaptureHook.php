@@ -57,6 +57,7 @@ abstract class ScoreCaptureHook implements HookInterface
                         source: OnScoreSource::EVALUATE_ANSWER,
                         tryId: $data->getRequest()->getTryId(),
                         completed: $data->getResponse()->isCompleted(),
+                        setCompleted: $data->getResponse()->isSetCompleted(),
                         score: $data->getResponse()->getScore(),
                     )
                 );
@@ -85,6 +86,7 @@ abstract class ScoreCaptureHook implements HookInterface
                         source: OnScoreSource::PLAY_SOLUTION,
                         tryId: $data->getRequest()->getTryId(),
                         completed: $data->getResponse()->isCompleted(),
+                        setCompleted: $data->getResponse()->isSetCompleted(),
                         score: $data->getResponse()->getScore(),
                     )
                 );

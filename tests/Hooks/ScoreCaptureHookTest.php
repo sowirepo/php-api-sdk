@@ -65,6 +65,34 @@ it('runs hook correctly', function () {
     $api->request($context, json_encode(PlaySolution::Request));
 });
 
+it('runs hook for completed set correctly', function () {
+    $client = mockHttpClient([
+        ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::ResponseForCompletedSet],
+        ['path' => PlaySolution::Uri, 'body' => PlaySolution::ResponseForCompletedSet],
+    ]);
+
+    $api = api(httpClient: $client);
+
+    $hook = mock(ScoreCaptureHook::class)->makePartial();
+
+    $context = contextWithUsername();
+
+    $hook->expects('onScore')
+        ->with(
+            capture(function (OnScoreData $data) use ($context) {
+                expect($data)
+                    ->getContext()->toBe($context)
+                    ->and($data->isSetCompleted())->toBe(true);
+            })
+        )
+        ->times(2);
+
+    $api->useHook($hook);
+
+    $api->request($context, json_encode(EvaluateAnswer::Request));
+    $api->request($context, json_encode(PlaySolution::Request));
+});
+
 it('runs hook before other callbacks', function () {
     $client = mockHttpClient([
         ['path' => EvaluateAnswer::Uri, 'body' => EvaluateAnswer::Response],
