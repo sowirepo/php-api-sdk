@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Http\Client\HttpClient;
 use Http\Message\RequestMatcher\RequestMatcher;
 use Http\Mock\Client;
 use Mockery\Matcher\Closure;
@@ -116,9 +115,9 @@ function contextWithUsername(?string $user = 'user1'): SowisoApiContext
 
 /**
  * @param array<array{path: string, body: mixed, statusCode?: int, json?: bool}> $responses
- * @return HttpClient
+ * @return ClientInterface
  */
-function mockHttpClient(array $responses): HttpClient
+function mockHttpClient(array $responses): ClientInterface
 {
     $client = new Client();
 
