@@ -44,6 +44,8 @@ class ReplayExerciseTryRequest extends AbstractRequest
             $uri .= sprintf('/lang/%s', $this->language);
         }
 
+        $uri .= '/arrays/true';
+
         return $uri;
     }
 

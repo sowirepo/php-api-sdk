@@ -8,9 +8,9 @@ use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryEndpoint;
 
 class ReplayExerciseTry
 {
-    public const Uri = '/api/play/replay/try_id/12345/lang/en';
+    public const Uri = '/api/play/replay/try_id/12345/lang/en/arrays/true';
 
-    public const UriWithoutLanguage = '/api/play/replay/try_id/12345';
+    public const UriWithoutLanguage = '/api/play/replay/try_id/12345/arrays/true';
 
     public const Request = [
         '__endpoint' => ReplayExerciseTryEndpoint::NAME,
