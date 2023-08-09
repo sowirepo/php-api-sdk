@@ -8,6 +8,7 @@ use Sowiso\SDK\Api\EvaluateAnswer\Data\EvaluateAnswerOnRequestData;
 use Sowiso\SDK\Api\EvaluateAnswer\EvaluateAnswerCallback;
 use Sowiso\SDK\Api\PlayExercise\Data\PlayExerciseOnRequestData;
 use Sowiso\SDK\Api\PlayExercise\PlayExerciseCallback;
+use Sowiso\SDK\Api\PlayExerciseSet\Data\PlayExerciseSetOnRequestData;
 use Sowiso\SDK\Api\PlayExerciseSet\Data\PlayExerciseSetOnSuccessData;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Api\PlayHint\Data\PlayHintOnRequestData;
@@ -92,6 +93,16 @@ abstract class TryIdVerificationHook implements HookInterface
             {
             }
 
+            public function onRequest(PlayExerciseSetOnRequestData $data): void
+            {
+                if ($data->getRequest()->usesTryId()) {
+                    // Safe to cast to an int because we checked if the try_id is used or not
+                    $tryId = (int) $data->getRequest()->getTryId();
+
+                    $this->hook->validateTryId($data->getContext(), $data->getPayload(), $tryId);
+                }
+            }
+
             public function onSuccess(PlayExerciseSetOnSuccessData $data): void
             {
                 if ($data->getRequest()->usesAnyReadonlyView()) {
@@ -99,11 +110,6 @@ abstract class TryIdVerificationHook implements HookInterface
                 }
 
                 if ($data->getRequest()->usesTryId()) {
-                    // Safe to cast to an int because we checked if the try_id is used or not
-                    $tryId = (int) $data->getRequest()->getTryId();
-
-                    $this->hook->validateTryId($data->getContext(), $data->getPayload(), $tryId);
-
                     return;
                 }
 
