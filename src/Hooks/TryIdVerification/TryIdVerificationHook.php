@@ -33,6 +33,8 @@ use Sowiso\SDK\SowisoApiPayload;
 
 /**
  * The {@link TryIdVerificationHook} wraps all endpoints that deal with "Try IDs".
+ *
+ * @deprecated Will be removed in v1.0.0
  */
 abstract class TryIdVerificationHook implements HookInterface
 {

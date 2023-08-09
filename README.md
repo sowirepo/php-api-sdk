@@ -112,8 +112,6 @@ try {
     // when the API response has an error
 } catch (FetchingFailedException $e) {
     // when the internal HTTP request to the API has failed for some reason
-} catch (InvalidTryIdException $e) {
-    // when an invalid SOWISO try id is caught
 } catch (DataVerificationFailedException $e) {
     // when verifying data failed in the "DataVerificationHook"
 } catch (SowisoApiException $e) {
@@ -445,7 +443,7 @@ $api->useHook(new class extends TryIdVerificationHook {
 });
 ```
 
-### TryIdVerification
+### TryIdVerification [DEPRECATED, will be removed in v1.0.0]
 
 The `TryIdVerification` hook wraps all endpoints that deal with "Try IDs". These IDs are used by SOWISO to distinguish
 between different attempts (_tries_) of exercises.

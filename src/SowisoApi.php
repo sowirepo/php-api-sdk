@@ -126,7 +126,6 @@ class SowisoApi
      * @throws MissingDataException when the API request or response is missing required data
      * @throws InvalidDataException when the API request or response contains invalid data
      * @throws ResponseErrorException when the API response has an error
-     * @throws InvalidTryIdException when an invalid SOWISO try id is caught - thrown by {@link TryIdVerificationHook}
      * @throws DataVerificationFailedException when verifying data failed in the {@link DataVerificationHook}
      * @throws SowisoApiException when any other error occurs
      */
