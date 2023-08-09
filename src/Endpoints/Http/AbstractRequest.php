@@ -21,6 +21,11 @@ abstract class AbstractRequest implements RequestInterface
     ) {
     }
 
+    public static function encodeForUrl(string $value): string
+    {
+        return rawurlencode($value);
+    }
+
     public function getMethod(): string
     {
         return 'GET';

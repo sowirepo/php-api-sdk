@@ -53,7 +53,7 @@ class PlayExerciseRequest extends AbstractRequest
         $uri = '/api/play/exercise';
 
         $uri .= sprintf('/try_id/%d', $this->tryId);
-        $uri .= sprintf('/username/%s', $this->user);
+        $uri .= sprintf('/username/%s', self::encodeForUrl($this->user));
 
         if ($this->language !== null) {
             $uri .= sprintf('/lang/%s', $this->language);

@@ -75,7 +75,7 @@ class PlayExerciseSetRequest extends AbstractRequest
             $uri .= sprintf('/set_id/%d', $this->setId);
         }
 
-        $uri .= sprintf('/username/%s', $this->user);
+        $uri .= sprintf('/username/%s', self::encodeForUrl($this->user));
 
         if ($this->language !== null) {
             $uri .= sprintf('/lang/%s', $this->language);

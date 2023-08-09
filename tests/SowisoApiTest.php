@@ -14,6 +14,7 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Data\OnRequestDataInterface;
 use Sowiso\SDK\Data\OnResponseDataInterface;
 use Sowiso\SDK\Data\OnSuccessDataInterface;
+use Sowiso\SDK\Endpoints\Http\AbstractRequest;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Exceptions\InvalidBaseUrlException;
@@ -242,3 +243,16 @@ it('can handle no additional payload', function (array $request) {
 
     yield "empty object" => [$requestWithEmptyObjectPayload];
 });
+
+// This test is standalone and not part of the affected endpoint tests.
+// This is because the RequestMatcher we use there (especially in makesRequestCorrectly) uses preg_match to compare if a path matches.
+// That is a problem because we want to test special characters, like "|", "?", and "+" which all interfere with regex special characters.
+it('builds request uri\'s correctly with special character username', function (string $username, string $encodedUsername) {
+    expect(AbstractRequest::encodeForUrl($username))
+        ->toBe($encodedUsername);
+})->with([
+    [
+        'pre!?fix|user@test 1+2/4=1,5',
+        'pre%21%3Ffix%7Cuser%40test%201%2B2%2F4%3D1%2C5',
+    ],
+]);
