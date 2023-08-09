@@ -23,6 +23,7 @@ use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Endpoints\EndpointInterface;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
+use Sowiso\SDK\Exceptions\DataVerificationFailedException;
 use Sowiso\SDK\Exceptions\InvalidDataException;
 use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
@@ -126,6 +127,7 @@ class SowisoApi
      * @throws InvalidDataException when the API request or response contains invalid data
      * @throws ResponseErrorException when the API response has an error
      * @throws InvalidTryIdException when an invalid SOWISO try id is caught - thrown by {@link TryIdVerificationHook}
+     * @throws DataVerificationFailedException when verifying data failed in the {@link DataVerificationHook}
      * @throws SowisoApiException when any other error occurs
      */
     public function request(SowisoApiContext $context, string $data): string

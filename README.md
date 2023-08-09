@@ -114,6 +114,8 @@ try {
     // when the internal HTTP request to the API has failed for some reason
 } catch (InvalidTryIdException $e) {
     // when an invalid SOWISO try id is caught
+} catch (DataVerificationFailedException $e) {
+    // when verifying data failed in the "DataVerificationHook"
 } catch (SowisoApiException $e) {
     // when any other SDK-related error occurs
 } catch (\Exception $e) {
@@ -342,6 +344,106 @@ $api->useCallback(new class extends StoreAnswerCallback {
 
 The SDK provides so-called hooks, which _hook into_ one or more callbacks. They are used for providing some
 SOWISO-specific functionality.
+
+### DataVerification
+
+The `DataVerificationHook` simplifies the verification of data in requests before they are passed to the API. The main
+use cases for this hook is making sure that any request data tampering that might happen between the SOWISO Player and
+the SDK gets detected and blocked, before it's passed to the API.
+
+The data verification can be done on a per-endpoint level. For example, all requests that are going to the "play/set"
+endpoint will be passed through the `verifyPlayExerciseSetRequest()` method before being sent to the API. Whenever the
+verification of data failed, the implementation can throw a `SowisoApiException.DataVerificationFailed` exception (or
+any other exception) which aborts the request stack (i.e., the request is not passed to the API) and exists
+the `SowisoApi#request()` method.
+
+Along with the parsed, endpoint-specific request data, all request data objects contain the following properties:
+
+- `context` - The context object that's passed into the `SowisoApi#request()` method
+- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useHook(new class extends TryIdVerificationHook {
+    public function verifyPlayExerciseSetRequest(PlayExerciseSetOnRequestData $data): void {}
+    public function verifyPlayExerciseRequest(PlayExerciseOnRequestData $data): void {}
+    public function verifyReplayExerciseTryRequest(ReplayExerciseTryOnRequestData $data): void {}
+    public function verifyEvaluateAnswerRequest(EvaluateAnswerOnRequestData $data): void {}
+    public function verifyPlayHintRequest(PlayHintOnRequestData $data): void {}
+    public function verifyPlaySolutionRequest(PlaySolutionOnRequestData $data): void {}
+    public function verifyStoreAnswerRequest(StoreAnswerOnRequestData $data): void {}
+});
+```
+
+#### Migrating from the TryIdVerification hook to the DataVerification hook
+
+The new `DataVerificationHook` simplifies the whole verification process by a lot; however, it required a bit more
+logic in the hook's implementation.
+
+First of all, we have removed the `onRegisterTryId()` method from the `TryIdVerificationHook` since it overlapped with
+the `DataCaptureHook::onRegisterExerciseSet()`. When you haven't used this method in the `DataCaptureHook` to register
+new exercise tries, please do this.
+
+Secondly, we have removed the `onCatchInvalidTryId()` method. This was an additional and optional helper method that
+could be implemented for the cases when an invalid "Try ID" was caught. The same behavior could also be achieved by
+catching the `InvalidTryIdException` exception (which will be removed as well) and will be available by catching
+the `DataVerificationFailedException` exception instead.
+
+And lastly, the `isValidTryId()` method. This was called on every request that contained a "Try ID". With the
+new `DataVerificationHook`, there will be new `validate...Request()` methods available for every endpoint where you can
+validate the given "Try ID".
+
+The following example shows an implementation of the `DataVerificationHook` where the private `verifyTryId()` method
+resembles the old `isValidTryId()` method (an `DataVerificationFailedException` exception should be thrown
+instead of returning false). As you can see, only the "play/set" endpoint needs some special attention at the moment
+since that endpoint allows requesting a "Try ID" and a "Set ID" (but not at the same time). Additionally, this example
+shows where to verify other request data parameters.
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useHook(new class extends TryIdVerificationHook {
+    public function verifyPlayExerciseSetRequest(PlayExerciseSetOnRequestData $data): void {
+        if ($data->getRequest()->usesTryId()) {
+            $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+        } else {
+            // $this->verifySetId($data->getRequest()->getSetId());
+        }
+
+        // $this->verifyView($data->getRequest()->getView());
+    }
+
+    public function verifyPlayExerciseRequest(PlayExerciseOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+        // $this->verifyView($data->getRequest()->getView());
+    }
+
+    public function verifyReplayExerciseTryRequest(ReplayExerciseTryOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+    }
+
+    public function verifyEvaluateAnswerRequest(EvaluateAnswerOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+    }
+
+    public function verifyPlayHintRequest(PlayHintOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+    }
+
+    public function verifyPlaySolutionRequest(PlaySolutionOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+    }
+
+    public function verifyStoreAnswerRequest(StoreAnswerOnRequestData $data): void {
+        $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
+    }
+
+    private function verifyTryId(SowisoApiContext context, SowisoApiPayload payload, int tryId) {
+        // ...
+    }
+});
+```
 
 ### TryIdVerification
 
