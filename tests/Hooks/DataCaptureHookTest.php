@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Callbacks\CallbackPriority;
-use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
+use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseSetData;
 use Sowiso\SDK\Hooks\DataCapture\DataCaptureHook;
 use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
 use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
@@ -24,30 +24,38 @@ it('runs hook correctly', function () {
 
     $context = contextWithUsername();
 
-    $index = 0;
-
-    $hook->expects('onRegisterExerciseTry')
+    $hook->expects('onRegisterExerciseSet')
         ->with(
-            capture(function (OnRegisterExerciseTryData $data) use (&$index, $context) {
+            capture(function (OnRegisterExerciseSetData $data) use ($context) {
                 expect($data)
                     ->getContext()->toBe($context)
                     ->getSetId()->toBe(PlayExerciseSet::Request['set_id'])
-                    ->getExerciseId()->toEqual(PlayExerciseSet::Response[$index]['exercise_id'])
-                    ->getTryId()->toEqual(PlayExerciseSet::Response[$index]['try_id']);
-
-                $index++;
+                    ->getExerciseTries()->toEqual([
+                        [
+                            'exerciseId' => PlayExerciseSet::Response[0]['exercise_id'],
+                            'tryId' => PlayExerciseSet::Response[0]['try_id'],
+                        ],
+                        [
+                            'exerciseId' => PlayExerciseSet::Response[1]['exercise_id'],
+                            'tryId' => PlayExerciseSet::Response[1]['try_id'],
+                        ]
+                    ]);
             })
         )
-        ->times(2);
+        ->once();
 
-    $hook->expects('onRegisterExerciseTry')
+    $hook->expects('onRegisterExerciseSet')
         ->with(
-            capture(function (OnRegisterExerciseTryData $data) use ($context) {
+            capture(function (OnRegisterExerciseSetData $data) use ($context) {
                 expect($data)
                     ->getContext()->toBe($context)
                     ->getSetId()->toBe(PlayExerciseSet::RequestAlternative['set_id'])
-                    ->getExerciseId()->toEqual(PlayExerciseSet::ResponseAlternativeOneExercise[0]['exercise_id'])
-                    ->getTryId()->toEqual(PlayExerciseSet::ResponseAlternativeOneExercise[0]['try_id']);
+                    ->getExerciseTries()->toEqual([
+                        [
+                            'exerciseId' => PlayExerciseSet::ResponseAlternativeOneExercise[0]['exercise_id'],
+                            'tryId' => PlayExerciseSet::ResponseAlternativeOneExercise[0]['try_id'],
+                        ],
+                    ]);
             })
         )
         ->once();
@@ -67,7 +75,7 @@ it('skips hook in readonly view correctly', function (string $path, mixed $respo
 
     $hook = mock(DataCaptureHook::class)->makePartial();
 
-    $hook->expects('onRegisterExerciseTry')->never();
+    $hook->expects('onRegisterExerciseSet')->never();
 
     $api->useHook($hook);
 
@@ -96,7 +104,7 @@ it('skips hook for requests with try_id correctly', function (string $path, mixe
 
     $hook = mock(DataCaptureHook::class)->makePartial();
 
-    $hook->expects('onRegisterExerciseTry')->never();
+    $hook->expects('onRegisterExerciseSet')->never();
 
     $api->useHook($hook);
 
@@ -128,7 +136,7 @@ it('runs hook before other callbacks', function () {
     $callback = mock(PlayExerciseSetCallback::class)->makePartial();
     $hook = mock(DataCaptureHook::class)->makePartial();
 
-    $hook->expects('onRegisterExerciseTry')->once()->globally()->ordered();
+    $hook->expects('onRegisterExerciseSet')->once()->globally()->ordered();
     $callback->expects('onSuccess')->once()->globally()->ordered();
 
     $api->useHook($hook);
@@ -149,14 +157,18 @@ it('runs hook before other hooks', function () {
     $dataCaptureHook = mock(DataCaptureHook::class)->makePartial();
     $tryIdVerificationHook = mock(TryIdVerificationHook::class)->makePartial();
 
-    $dataCaptureHook->expects('onRegisterExerciseTry')
+    $dataCaptureHook->expects('onRegisterExerciseSet')
         ->with(
-            capture(function (OnRegisterExerciseTryData $data) use ($context) {
+            capture(function (OnRegisterExerciseSetData $data) use ($context) {
                 expect($data)
                     ->getContext()->toBe($context)
                     ->getSetId()->toBe(PlayExerciseSet::Request['set_id'])
-                    ->getExerciseId()->toEqual(PlayExerciseSet::ResponseOneExercise[0]['exercise_id'])
-                    ->getTryId()->toEqual(PlayExerciseSet::ResponseOneExercise[0]['try_id']);
+                    ->getExerciseTries()->toEqual([
+                        [
+                            'exerciseId' => PlayExerciseSet::ResponseOneExercise[0]['exercise_id'],
+                            'tryId' => PlayExerciseSet::ResponseOneExercise[0]['try_id'],
+                        ],
+                    ]);
             })
         )
         ->once()->globally()->ordered();
@@ -192,9 +204,9 @@ it('can access additional payload in hook', function () {
 
     $hook = mock(DataCaptureHook::class)->makePartial();
 
-    $hook->expects('onRegisterExerciseTry')
+    $hook->expects('onRegisterExerciseSet')
         ->with(
-            capture(function (OnRegisterExerciseTryData $data) {
+            capture(function (OnRegisterExerciseSetData $data) {
                 expect($data)
                     ->getPayload()->getData()->toBe(Payload::Test);
             })

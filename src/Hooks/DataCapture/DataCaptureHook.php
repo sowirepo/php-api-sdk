@@ -10,6 +10,7 @@ use Sowiso\SDK\Callbacks\CallbackInterface;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
+use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseSetData;
 use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
 use Sowiso\SDK\Hooks\HookInterface;
 
@@ -19,11 +20,11 @@ use Sowiso\SDK\Hooks\HookInterface;
 abstract class DataCaptureHook implements HookInterface
 {
     /**
-     * This method is called when a new "Exercise Try" was returned by the API.
+     * This method is called when a new set of "Exercise Tries" was returned by the API.
      *
-     * @param OnRegisterExerciseTryData $data containing the current context, the "Set ID", the "Exercise ID", and the "Try ID"
+     * @param OnRegisterExerciseSetData $data containing the current context, the "Set ID", the "Exercise Tries"
      */
-    abstract public function onRegisterExerciseTry(OnRegisterExerciseTryData $data): void;
+    abstract public function onRegisterExerciseSet(OnRegisterExerciseSetData $data): void;
 
     /**
      * @return array<CallbackInterface<RequestInterface, ResponseInterface>>
@@ -56,17 +57,14 @@ abstract class DataCaptureHook implements HookInterface
                 // Safe to cast to an int because when no try_id is used, the set_id was already validated
                 $setId = (int) $data->getRequest()->getSetId();
 
-                foreach ($data->getResponse()->getExerciseTries() as $exerciseTry) {
-                    $this->hook->onRegisterExerciseTry(
-                        new OnRegisterExerciseTryData(
-                            $data->getContext(),
-                            $data->getPayload(),
-                            $setId,
-                            $exerciseTry['exerciseId'],
-                            $exerciseTry['tryId'],
-                        )
-                    );
-                }
+                $this->hook->onRegisterExerciseSet(
+                    new OnRegisterExerciseSetData(
+                        $data->getContext(),
+                        $data->getPayload(),
+                        $setId,
+                        $data->getResponse()->getExerciseTries(),
+                    )
+                );
             }
 
             public function priority(): int

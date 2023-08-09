@@ -373,11 +373,10 @@ $api->useHook(new class extends TryIdVerificationHook {
 The `DataCapture` hook simplifies receiving common, processed data. It can be extended in the future to provide other
 common data.
 
-The `OnRegisterExerciseTryData` object contains the following properties:
+The `OnRegisterExerciseSetData` object contains the following properties:
 
 - `setId` - The "Set ID" of the set containing the exercise
-- `exerciseId` - The ID of the exercise itself
-- `tryId` - The "Try ID" of the "Exercise Try"
+- `exerciseTries` - The list of exercise tries, each including the "Exercise ID" and "Try ID"
 - `context` - The context object that's passed into the `SowisoApi#request()` method
 - `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
 
@@ -385,7 +384,7 @@ The `OnRegisterExerciseTryData` object contains the following properties:
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
 
 $api->useHook(new class extends DataCaptureHook {
-    public function onRegisterExerciseTry(OnRegisterExerciseTryData $data): void {}
+    public function onRegisterExerciseSet(OnRegisterExerciseSetData $data): void {}
 });
 ```
 

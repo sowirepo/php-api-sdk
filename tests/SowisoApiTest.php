@@ -23,7 +23,7 @@ use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
 use Sowiso\SDK\Exceptions\NoEndpointException;
-use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
+use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseSetData;
 use Sowiso\SDK\Hooks\DataCapture\DataCaptureHook;
 use Sowiso\SDK\SowisoApi;
 use Sowiso\SDK\SowisoApiConfiguration;
@@ -210,9 +210,9 @@ it('can handle no additional payload', function (array $request) {
 
     $hook = mock(DataCaptureHook::class)->makePartial();
 
-    $hook->expects('onRegisterExerciseTry')
+    $hook->expects('onRegisterExerciseSet')
         ->with(
-            capture(function (OnRegisterExerciseTryData $data) {
+            capture(function (OnRegisterExerciseSetData $data) {
                 expect($data)
                     ->getPayload()->getData()->toBeNull();
             })
