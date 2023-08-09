@@ -29,7 +29,6 @@ use Sowiso\SDK\Exceptions\InvalidEndpointException;
 use Sowiso\SDK\Exceptions\InvalidJsonDataException;
 use Sowiso\SDK\Exceptions\InvalidJsonRequestException;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
-use Sowiso\SDK\Exceptions\InvalidTryIdException;
 use Sowiso\SDK\Exceptions\MissingDataException;
 use Sowiso\SDK\Exceptions\NoApiKeyException;
 use Sowiso\SDK\Exceptions\NoBaseUrlException;
