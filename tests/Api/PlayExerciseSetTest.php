@@ -42,6 +42,11 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlayExerciseSet::RequestWithoutView,
         PlayExerciseSet::Response,
     ],
+    'with invalid view' => [
+        PlayExerciseSet::Uri,
+        PlayExerciseSet::RequestWithInvalidView,
+        PlayExerciseSet::Response,
+    ],
     'without language' => [
         PlayExerciseSet::UriWithoutLanguage,
         PlayExerciseSet::RequestWithoutLanguage,

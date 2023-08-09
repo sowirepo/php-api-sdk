@@ -44,7 +44,7 @@ class PlayExerciseRequest extends AbstractRequest
 
         $this->user = $user;
         $this->language = $language;
-        $this->view = $view;
+        $this->view = $this->validatedView($view);
         $this->tryId = $tryId;
     }
 
@@ -85,5 +85,18 @@ class PlayExerciseRequest extends AbstractRequest
     public function getTryId(): int
     {
         return $this->tryId;
+    }
+
+    protected function validatedView(?string $value): ?string
+    {
+        $isValid = in_array($value, [
+            self::VIEW_STUDENT,
+        ], strict: true);
+
+        if ($isValid) {
+            return $value;
+        }
+
+        return self::VIEW_STUDENT;
     }
 }

@@ -25,6 +25,13 @@ class PlayExercise
         'try_id' => 12345,
     ];
 
+    public const RequestWithInvalidView = [
+        '__endpoint' => PlayExerciseEndpoint::NAME,
+        'view' => 'INVALID',
+        'lang' => 'en',
+        'try_id' => 12345,
+    ];
+
     public const RequestWithoutLanguage = [
         '__endpoint' => PlayExerciseEndpoint::NAME,
         'view' => 'student',

@@ -61,6 +61,13 @@ class PlayExerciseSet
         'set_id' => 234,
     ];
 
+    public const RequestWithInvalidView = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'INVALID',
+        'lang' => 'en',
+        'set_id' => 234,
+    ];
+
     public const RequestWithoutLanguage = [
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'student',
