@@ -16,6 +16,8 @@ class PlayExerciseSet
 
     public const UriReadonlyView = '/api/play/set/set_id/234/username/user1/lang/en/view/readonly/arrays/true/payload/true';
 
+    public const UriReadonlyRestrictedView = '/api/play/set/set_id/234/username/user1/lang/en/view/readonly-restricted/arrays/true/payload/true';
+
     public const UriWithoutLanguage = '/api/play/set/set_id/234/username/user1/view/student/arrays/true/payload/true';
 
     public const UriWithTryId = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/arrays/true/payload/true';
@@ -42,6 +44,13 @@ class PlayExerciseSet
     public const RequestReadonlyView = [
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'readonly',
+        'lang' => 'en',
+        'set_id' => 234,
+    ];
+
+    public const RequestReadonlyRestrictedView = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'readonly-restricted',
         'lang' => 'en',
         'set_id' => 234,
     ];
@@ -115,6 +124,19 @@ class PlayExerciseSet
     ];
 
     public const ResponseReadonlyView = [
+        [
+            'exercise_id' => 67890,
+            'try_id' => null,
+            'set_order' => '0',
+        ],
+        [
+            'exercise_id' => 67891,
+            'try_id' => null,
+            'set_order' => '1',
+        ],
+    ];
+
+    public const ResponseReadonlyRestrictedView = [
         [
             'exercise_id' => 67890,
             'try_id' => null,

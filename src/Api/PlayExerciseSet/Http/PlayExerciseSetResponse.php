@@ -31,7 +31,7 @@ class PlayExerciseSetResponse extends AbstractResponse
         // In readonly view, the exerciseTries array should be empty.
         // However, in non-readonly view, an exception should be thrown when the exerciseTries array isn't complete.
         $hasInvalidExerciseTries = $request instanceof PlayExerciseSetRequest
-            && !$request->isReadonlyView()
+            && !$request->usesAnyReadonlyView()
             && count($exerciseTries) !== count($data);
 
         if ($hasInvalidExerciseTries) {

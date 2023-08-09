@@ -46,7 +46,7 @@ abstract class DataCaptureHook implements HookInterface
 
             public function onSuccess(PlayExerciseSetOnSuccessData $data): void
             {
-                if ($data->getRequest()->isReadonlyView()) {
+                if ($data->getRequest()->usesAnyReadonlyView()) {
                     return;
                 }
 

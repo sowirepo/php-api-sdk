@@ -94,7 +94,7 @@ abstract class TryIdVerificationHook implements HookInterface
 
             public function onSuccess(PlayExerciseSetOnSuccessData $data): void
             {
-                if ($data->getRequest()->isReadonlyView()) {
+                if ($data->getRequest()->usesAnyReadonlyView()) {
                     return;
                 }
 

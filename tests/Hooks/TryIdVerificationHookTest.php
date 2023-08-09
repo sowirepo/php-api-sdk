@@ -132,7 +132,7 @@ it('runs hook for play/set with try_id correctly', function () {
     $api->request($context, json_encode(PlayExerciseSet::RequestWithTryId));
 });
 
-it('skips hook in readonly view correctly', function (string $path, mixed $response) {
+it('skips hook in readonly view correctly', function (string $path, mixed $request, mixed $response) {
     $client = mockHttpClient([
         ['path' => $path, 'body' => $response],
     ]);
@@ -147,19 +147,27 @@ it('skips hook in readonly view correctly', function (string $path, mixed $respo
 
     $api->useHook($hook);
 
-    $api->request(contextWithUsername(), json_encode(PlayExerciseSet::RequestReadonlyView));
+    $api->request(contextWithUsername(), json_encode($request));
 })->with([
     'default' => [
         PlayExerciseSet::UriReadonlyView,
+        PlayExerciseSet::RequestReadonlyView,
         PlayExerciseSet::ResponseReadonlyView,
     ],
     'one exercise' => [
         PlayExerciseSet::UriReadonlyView,
+        PlayExerciseSet::RequestReadonlyView,
         PlayExerciseSet::ResponseOneExerciseReadonlyView,
     ],
     'alternative exercise' => [
         PlayExerciseSet::UriReadonlyView,
+        PlayExerciseSet::RequestReadonlyView,
         PlayExerciseSet::ResponseAlternativeExerciseReadonlyView
+    ],
+    'readonly-restricted' => [
+        PlayExerciseSet::UriReadonlyRestrictedView,
+        PlayExerciseSet::RequestReadonlyRestrictedView,
+        PlayExerciseSet::ResponseReadonlyRestrictedView,
     ],
 ]);
 

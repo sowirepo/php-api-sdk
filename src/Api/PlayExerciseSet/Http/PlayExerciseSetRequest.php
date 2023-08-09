@@ -16,6 +16,7 @@ class PlayExerciseSetRequest extends AbstractRequest
 {
     private const VIEW_STUDENT = 'student';
     private const VIEW_READONLY = 'readonly';
+    private const VIEW_READONLY_RESTRICTED = 'readonly-restricted';
     private const MODE_PRACTICE = 'practice';
     private const MODE_TEST = 'test';
 
@@ -132,9 +133,9 @@ class PlayExerciseSetRequest extends AbstractRequest
         $this->mode = $testMode ? self::MODE_TEST : null;
     }
 
-    public function isReadonlyView(): bool
+    public function usesAnyReadonlyView(): bool
     {
-        return $this->getView() === self::VIEW_READONLY;
+        return $this->getView() === self::VIEW_READONLY || $this->getView() === self::VIEW_READONLY_RESTRICTED;
     }
 
     public function usesTryId(): bool

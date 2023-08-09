@@ -32,6 +32,11 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlayExerciseSet::RequestReadonlyView,
         PlayExerciseSet::ResponseReadonlyView,
     ],
+    'readonly-restricted view' => [
+        PlayExerciseSet::UriReadonlyRestrictedView,
+        PlayExerciseSet::RequestReadonlyRestrictedView,
+        PlayExerciseSet::ResponseReadonlyRestrictedView,
+    ],
     'without view' => [
         PlayExerciseSet::Uri,
         PlayExerciseSet::RequestWithoutView,
@@ -157,6 +162,29 @@ it('runs all callback methods in readonly view correctly', function () {
                 ->getLanguage()->toBe(PlayExerciseSet::RequestReadonlyView['lang'])
                 ->getView()->toBe(PlayExerciseSet::RequestReadonlyView['view'])
                 ->getSetId()->toBe(PlayExerciseSet::RequestReadonlyView['set_id'])
+                ->usesTryId()->toBe(false);
+        },
+        responseCaptor: function (PlayExerciseSetResponse $response) {
+            expect($response->getExerciseTries())->toBe([]);
+        },
+        context: $context,
+    );
+});
+
+it('runs all callback methods in readonly-restricted view correctly', function () {
+    $context = contextWithUsername();
+
+    runsAllCallbackMethodsCorrectly(
+        uri: PlayExerciseSet::UriReadonlyRestrictedView,
+        request: PlayExerciseSet::RequestReadonlyRestrictedView,
+        response: PlayExerciseSet::ResponseReadonlyRestrictedView,
+        callbackName: PlayExerciseSetCallback::class,
+        requestCaptor: function (PlayExerciseSetRequest $request) use ($context) {
+            expect($request)
+                ->getUser()->toBe($context->getUser())
+                ->getLanguage()->toBe(PlayExerciseSet::RequestReadonlyRestrictedView['lang'])
+                ->getView()->toBe(PlayExerciseSet::RequestReadonlyRestrictedView['view'])
+                ->getSetId()->toBe(PlayExerciseSet::RequestReadonlyRestrictedView['set_id'])
                 ->usesTryId()->toBe(false);
         },
         responseCaptor: function (PlayExerciseSetResponse $response) {
