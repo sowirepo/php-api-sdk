@@ -11,7 +11,6 @@ use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Endpoints\Http\RequestInterface;
 use Sowiso\SDK\Endpoints\Http\ResponseInterface;
 use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseSetData;
-use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseTryData;
 use Sowiso\SDK\Hooks\HookInterface;
 
 /**
