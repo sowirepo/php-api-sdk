@@ -32,12 +32,12 @@ it('makes request correctly in "test" mode', function () {
         useApi: fn (SowisoApi $api) => $api->useHook(new class () extends TestModeHook {
             public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool
             {
-                return false; // Not needed in the PlayExerciseSetEndpoint
+                return false; // Not needed in the EvaluateAnswerEndpoint
             }
 
             public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
             {
-                return false; // Not needed in the PlayExerciseSetEndpoint
+                return false; // Not needed in the EvaluateAnswerEndpoint
             }
 
             public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool

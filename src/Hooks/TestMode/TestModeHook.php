@@ -39,7 +39,7 @@ abstract class TestModeHook implements HookInterface
     abstract public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool;
 
     /**
-     * This method is called before a {@link PlayExerciseSetEndpoint} request is sent to the API.
+     * This method is called before a {@link EvaluateAnswerEndpoint} request is sent to the API.
      *
      * @param ShouldExerciseTryBeEvaluatedInTestModeData $data containing the current context and the "Try ID"
      * @return bool whether the "Try ID" should be evaluated in "test" mode
