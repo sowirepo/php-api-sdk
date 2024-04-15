@@ -125,12 +125,21 @@ function mockHttpClient(array $responses): ClientInterface
         $json = is_bool($json = $response['json'] ?? true) ? $json : true;
         $body = $json ? json_encode($response['body']) : $response['body'];
 
+        $httpResponse = mock(ResponseInterface::class);
+
+        $httpResponse
+            ->shouldReceive('getStatusCode')
+            ->once()
+            ->andReturnUsing(fn () => $response['statusCode'] ?? 200);
+
+        $httpResponse
+            ->shouldReceive('getBody')
+            ->once()
+            ->andReturnUsing(fn () => Stream::create($body));
+
         $client->on(
             requestMatcher: new RequestMatcher($response['path']),
-            result: mock(ResponseInterface::class)->expect(
-                getStatusCode: fn () => $response['statusCode'] ?? 200,
-                getBody: fn () => Stream::create($body),
-            )
+            result: $httpResponse,
         );
     }
 
