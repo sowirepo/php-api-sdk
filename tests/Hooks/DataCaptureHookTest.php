@@ -6,8 +6,6 @@ use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
 use Sowiso\SDK\Callbacks\CallbackPriority;
 use Sowiso\SDK\Hooks\DataCapture\Data\OnRegisterExerciseSetData;
 use Sowiso\SDK\Hooks\DataCapture\DataCaptureHook;
-use Sowiso\SDK\Hooks\TryIdVerification\Data\OnRegisterTryIdData;
-use Sowiso\SDK\Hooks\TryIdVerification\TryIdVerificationHook;
 use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\Tests\Fixtures\Payload;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
@@ -149,50 +147,6 @@ it('runs hook before other callbacks', function () {
 
     $api->useHook($hook);
     $api->useCallback($callback);
-
-    $api->request($context, json_encode(PlayExerciseSet::Request));
-});
-
-it('runs hook before other hooks', function () {
-    $client = mockHttpClient([
-        ['path' => PlayExerciseSet::Uri, 'body' => PlayExerciseSet::ResponseOneExercise],
-    ]);
-
-    $api = api(httpClient: $client);
-
-    $context = contextWithUsername();
-
-    $dataCaptureHook = mock(DataCaptureHook::class)->makePartial();
-    $tryIdVerificationHook = mock(TryIdVerificationHook::class)->makePartial();
-
-    $dataCaptureHook->expects('onRegisterExerciseSet')
-        ->with(
-            capture(function (OnRegisterExerciseSetData $data) use ($context) {
-                expect($data)
-                    ->getContext()->toBe($context)
-                    ->getSetId()->toBe(PlayExerciseSet::Request['set_id'])
-                    ->getExerciseTries()->toEqual([
-                        [
-                            'exerciseId' => PlayExerciseSet::ResponseOneExercise[0]['exercise_id'],
-                            'tryId' => PlayExerciseSet::ResponseOneExercise[0]['try_id'],
-                        ],
-                    ]);
-            })
-        )
-        ->once()->globally()->ordered();
-
-    $tryIdVerificationHook->expects('onRegisterTryId')
-        ->with(
-            capture(function (OnRegisterTryIdData $data) use ($context) {
-                expect($data)
-                    ->getContext()->toBe($context)
-                    ->getTryId()->toEqual(PlayExerciseSet::ResponseOneExercise[0]['try_id']);
-            })
-        )
-        ->once()->globally()->ordered();
-
-    $api->useHook($tryIdVerificationHook);
-    $api->useHook($dataCaptureHook);
 
     $api->request($context, json_encode(PlayExerciseSet::Request));
 });

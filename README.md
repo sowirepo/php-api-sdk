@@ -443,31 +443,6 @@ $api->useHook(new class extends DataVerificationHook {
 });
 ```
 
-### TryIdVerification [DEPRECATED, will be removed in v1.0.0]
-
-The `TryIdVerification` hook wraps all endpoints that deal with "Try IDs". These IDs are used by SOWISO to distinguish
-between different attempts (_tries_) of exercises.
-
-The `onRegisterTryId()` method is called when a new "Try ID" is returned by the API (e.g., from the `PlayExerciseSet`
-endpoint). For any consecutive request that depends on a "Try ID" (e.g., to the `EvaluateAnswer` endpoint),
-the `isValidTryId()` method should return _false_ when the "Try ID" wasn't registered to the current user. In that case,
-the request is aborted and the `onCatchInvalidTryId()` method is called. All data objects contain the following
-properties:
-
-- `tryId` - The "Try ID" that was created or requested
-- `context` - The context object that's passed into the `SowisoApi#request()` method
-- `payload` - The JSON data that's passed in the `__additionalPayload` field of the request
-
-```php
-$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
-
-$api->useHook(new class extends TryIdVerificationHook {
-    public function onRegisterTryId(OnRegisterTryIdData $data): void {}
-    public function onCatchInvalidTryId(OnCatchInvalidTryIdData $data): void {}
-    public function isValidTryId(IsValidTryIdData $data): bool { return true; }
-});
-```
-
 ### DataCapture
 
 The `DataCapture` hook simplifies receiving common, processed data. It can be extended in the future to provide other
