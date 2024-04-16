@@ -363,7 +363,7 @@ Along with the parsed, endpoint-specific request data, all request data objects 
 ```php
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
 
-$api->useHook(new class extends TryIdVerificationHook {
+$api->useHook(new class extends DataVerificationHook {
     public function verifyPlayExerciseSetRequest(PlayExerciseSetOnRequestData $data): void {}
     public function verifyPlayExerciseRequest(PlayExerciseOnRequestData $data): void {}
     public function verifyReplayExerciseTryRequest(ReplayExerciseTryOnRequestData $data): void {}
@@ -401,7 +401,7 @@ shows where to verify other request data parameters.
 ```php
 $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
 
-$api->useHook(new class extends TryIdVerificationHook {
+$api->useHook(new class extends DataVerificationHook {
     public function verifyPlayExerciseSetRequest(PlayExerciseSetOnRequestData $data): void {
         if ($data->getRequest()->usesTryId()) {
             $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
@@ -437,7 +437,7 @@ $api->useHook(new class extends TryIdVerificationHook {
         $this->verifyTryId($data->getContext(), $data->getPayload(), $data->getRequest()->getTryId());
     }
 
-    private function verifyTryId(SowisoApiContext context, SowisoApiPayload payload, int tryId) {
+    private function verifyTryId(SowisoApiContext $context, SowisoApiPayload $payload, int $tryId): void {
         // ...
     }
 });
