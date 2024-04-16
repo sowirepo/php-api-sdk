@@ -29,6 +29,7 @@ interface CallbackInterface
 
     /**
      * @param SowisoApiContext $context
+     * @param SowisoApiPayload $payload
      * @param TRequest $request
      * @return void
      */
@@ -36,6 +37,7 @@ interface CallbackInterface
 
     /**
      * @param SowisoApiContext $context
+     * @param SowisoApiPayload $payload
      * @param TResponse $response
      * @return void
      */
@@ -43,6 +45,7 @@ interface CallbackInterface
 
     /**
      * @param SowisoApiContext $context
+     * @param SowisoApiPayload $payload
      * @param TRequest $request
      * @param TResponse $response
      * @return void
@@ -51,6 +54,7 @@ interface CallbackInterface
 
     /**
      * @param SowisoApiContext $context
+     * @param SowisoApiPayload $payload
      * @param Exception $exception
      * @return void
      */
