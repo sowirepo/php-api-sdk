@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v1.2.0] - 2024-04-17
 
-- Add RequestHandlers (53f5da07)
+- Add RequestHandlers (c4c0448d)
 
 ## [v1.1.0] - 2024-04-16
 
