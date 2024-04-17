@@ -5,16 +5,21 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\ReplayExerciseTry\Http\ReplayExerciseTryRequest;
 use Sowiso\SDK\Api\ReplayExerciseTry\Http\ReplayExerciseTryResponse;
 use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryCallback;
+use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryRequestHandler;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
+use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 use Sowiso\SDK\Tests\Fixtures\ReplayExerciseTry;
 
-it('makes request correctly', function (string $uri, array $request, mixed $response) {
+it('makes request correctly', function (string $uri, array $request, mixed $response, callable|null $useApi) {
     makesRequestCorrectly(
         method: 'GET',
         uri: $uri,
         request: $request,
         response: $response,
         context: context(),
+        useApi: $useApi,
     );
 })->with([
     'default' => [
@@ -27,9 +32,43 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         ReplayExerciseTry::RequestWithoutLanguage,
         ReplayExerciseTry::Response
     ],
+])->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends ReplayExerciseTryRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, ReplayExerciseTryRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
 ]);
 
-it('runs all callback methods correctly', function () {
+it('makes request correctly with request handler', function () {
+    makesRequestWithRequestHandlerCorrectly(
+        request: ReplayExerciseTry::Request,
+        callbackName: ReplayExerciseTryCallback::class,
+        responseCaptor: function (ReplayExerciseTryResponse $response) {
+            expect($response->getData()['random_value'])->toBe(12345);
+        },
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends ReplayExerciseTryRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, ReplayExerciseTryRequest $request): ?array
+                {
+                    $response = ReplayExerciseTry::Response;
+                    $response['random_value'] = 12345;
+
+                    return $response;
+                }
+            }
+        ),
+    );
+});
+
+it('runs all callback methods correctly', function (callable|null $useApi) {
     runsAllCallbackMethodsCorrectly(
         uri: ReplayExerciseTry::Uri,
         request: ReplayExerciseTry::Request,
@@ -43,8 +82,21 @@ it('runs all callback methods correctly', function () {
         responseCaptor: function (ReplayExerciseTryResponse $response) {
         },
         context: context(),
+        useApi: $useApi,
     );
-});
+})->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends ReplayExerciseTryRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, ReplayExerciseTryRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
+]);
 
 it('runs onFailure callback method correctly on missing data', function () {
     $request = ReplayExerciseTry::Request;

@@ -16,7 +16,7 @@ class StoreAnswerEndpoint extends AbstractEndpoint
 {
     public const NAME = "store/answer";
 
-    protected function createRequest(
+    public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -24,7 +24,7 @@ class StoreAnswerEndpoint extends AbstractEndpoint
         return new StoreAnswerRequest($context, $payload, $data);
     }
 
-    protected function createResponse(
+    public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,

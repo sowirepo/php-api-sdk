@@ -5,21 +5,25 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetRequest;
 use Sowiso\SDK\Api\PlayExerciseSet\Http\PlayExerciseSetResponse;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetCallback;
+use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetRequestHandler;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseSetBePlayedInTestModeData;
 use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBeEvaluatedInTestModeData;
 use Sowiso\SDK\Hooks\TestMode\Data\ShouldExerciseTryBePlayedInTestModeData;
 use Sowiso\SDK\Hooks\TestMode\TestModeHook;
 use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 use Sowiso\SDK\Tests\Fixtures\PlayExerciseSet;
 
-it('makes request correctly', function (string $uri, array $request, mixed $response) {
+it('makes request correctly', function (string $uri, array $request, mixed $response, callable|null $useApi) {
     makesRequestCorrectly(
         method: 'GET',
         uri: $uri,
         request: $request,
         response: $response,
         context: contextWithUsername(),
+        useApi: $useApi,
     );
 })->with([
     'default' => [
@@ -67,7 +71,41 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlayExerciseSet::RequestWithTryIdWithoutLanguage,
         PlayExerciseSet::ResponseWithTryId,
     ],
+])->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlayExerciseSetRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayExerciseSetRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
 ]);
+
+it('makes request correctly with request handler', function () {
+    makesRequestWithRequestHandlerCorrectly(
+        request: PlayExerciseSet::Request,
+        callbackName: PlayExerciseSetCallback::class,
+        responseCaptor: function (PlayExerciseSetResponse $response) {
+            expect($response->getData()[0]['random_value'])->toBe(12345);
+        },
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlayExerciseSetRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayExerciseSetRequest $request): ?array
+                {
+                    $response = PlayExerciseSet::Response;
+                    $response[0]['random_value'] = 12345;
+
+                    return $response;
+                }
+            }
+        ),
+    );
+});
 
 it('makes request correctly in "test" mode', function () {
     makesRequestCorrectly(
@@ -121,7 +159,7 @@ it('makes request with try_id correctly in "test" mode', function () {
     );
 });
 
-it('runs all callback methods correctly', function () {
+it('runs all callback methods correctly', function (callable|null $useApi) {
     $context = contextWithUsername();
 
     runsAllCallbackMethodsCorrectly(
@@ -150,8 +188,21 @@ it('runs all callback methods correctly', function () {
             );
         },
         context: $context,
+        useApi: $useApi,
     );
-});
+})->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlayExerciseSetRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayExerciseSetRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
+]);
 
 it('runs all callback methods in readonly view correctly', function () {
     $context = contextWithUsername();

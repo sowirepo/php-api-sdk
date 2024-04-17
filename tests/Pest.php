@@ -206,6 +206,67 @@ function makesRequestCorrectly(
 }
 
 /**
+ * @param array $request
+ * @param class-string $callbackName
+ * @param callable(ResponseInterface): void $responseCaptor
+ * @param SowisoApiContext|null $context
+ * @param callable|null $useApi
+ * @return void
+ * @throws SowisoApiException
+ */
+function makesRequestWithRequestHandlerCorrectly(
+    array $request,
+    string $callbackName,
+    callable $responseCaptor,
+    ?SowisoApiContext $context = null,
+    ?callable $useApi = null,
+): void {
+    $context ??= context();
+
+    /** @var Client $client */
+    $client = mockHttpClient([]);
+
+    $api = api(httpClient: $client);
+
+    if ($useApi !== null) {
+        $useApi($api);
+    }
+
+    /** @var Mock|MockInterface&CallbackInterface<RequestInterface, ResponseInterface> $callback */
+    $callback = mock($callbackName)->makePartial();
+
+    $contextCaptor = fn (SowisoApiContext $it) => expect($it)->toBe($context);
+
+    $callback->expects('onRequest')->with(
+        capture(function (OnRequestDataInterface $data) use ($contextCaptor) {
+            $contextCaptor($data->getContext());
+        })
+    )->once();
+
+    $callback->expects('onResponse')->with(
+        capture(function (OnResponseDataInterface $data) use ($contextCaptor) {
+            $contextCaptor($data->getContext());
+        })
+    )->once();
+
+    $callback->expects('onSuccess')->with(
+        capture(function (OnSuccessDataInterface $data) use ($contextCaptor, $responseCaptor) {
+            $contextCaptor($data->getContext());
+            $responseCaptor($data->getResponse());
+        })
+    )->once();
+
+    $callback->expects('onFailure')
+        ->never();
+
+    $api->useCallback($callback);
+
+    $api->request($context, json_encode($request));
+
+    expect($client->getLastRequest())->toBeFalse();
+}
+
+/**
  * @param string $uri
  * @param array $request
  * @param array $response
@@ -213,6 +274,7 @@ function makesRequestCorrectly(
  * @param callable(RequestInterface): void $requestCaptor
  * @param callable(ResponseInterface): void $responseCaptor
  * @param SowisoApiContext|null $context
+ * @param callable|null $useApi
  * @throws SowisoApiException
  */
 function runsAllCallbackMethodsCorrectly(
@@ -223,12 +285,17 @@ function runsAllCallbackMethodsCorrectly(
     callable $requestCaptor,
     callable $responseCaptor,
     ?SowisoApiContext $context = null,
+    ?callable $useApi = null,
 ): void {
     $client = mockHttpClient([
         ['path' => $uri, 'body' => $response],
     ]);
 
     $api = api(httpClient: $client);
+
+    if ($useApi !== null) {
+        $useApi($api);
+    }
 
     $context ??= context();
 

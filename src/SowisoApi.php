@@ -37,6 +37,7 @@ use Sowiso\SDK\Exceptions\NoUserException;
 use Sowiso\SDK\Exceptions\ResponseErrorException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\Hooks\HookInterface;
+use Sowiso\SDK\RequestHandlers\RequestHandlerInterface;
 
 class SowisoApi
 {
@@ -66,6 +67,16 @@ class SowisoApi
      */
     private array $callbacks = [];
 
+    /**
+     * Holds all registered request handlers.
+     * It's used to find the registered request handlers linked to the {@link SowisoApiConfiguration::ENDPOINT_IDENTIFIER} identifier.
+     *
+     * Registering a request handlers is done by the SDK's user.
+     *
+     * @var array<class-string<EndpointInterface>, RequestHandlerInterface<EndpointInterface, RequestInterface, ResponseInterface>>
+     */
+    private array $requestHandlers = [];
+
     public function __construct(
         private SowisoApiConfiguration $configuration,
         private ?ClientInterface $httpClient = null,
@@ -86,6 +97,21 @@ class SowisoApi
 
         $this->callbacks[$endpoint] ??= [];
         $this->callbacks[$endpoint][] = $callback;
+
+        return $this;
+    }
+
+    /**
+     * Registers any request handler that implements {@link RequestHandlerInterface}.
+     *
+     * @param RequestHandlerInterface<EndpointInterface, RequestInterface, ResponseInterface> $requestHandler
+     * @return SowisoApi
+     */
+    public function useRequestHandler(RequestHandlerInterface $requestHandler): self
+    {
+        $endpoint = $requestHandler->endpoint();
+
+        $this->requestHandlers[$endpoint] = $requestHandler;
 
         return $this;
     }
@@ -139,13 +165,18 @@ class SowisoApi
         $this->configuration->validate();
 
         $endpoint = $this->resolveEndpoint($json);
+        $endpointName = get_class($endpoint);
+
+        $callbacks = $this->callbacks[$endpointName] ?? [];
+        $requestHandler = $this->requestHandlers[$endpointName] ?? null;
 
         $endpoint = $endpoint
             ->withConfiguration($this->getConfiguration())
             ->withHttpClient($this->getHttpClient())
             ->withHttpRequestFactory($this->getHttpRequestFactory())
             ->withHttpStreamFactory($this->getHttpStreamFactory())
-            ->withCallbacks($this->callbacks[get_class($endpoint)] ?? []);
+            ->withCallbacks($callbacks)
+            ->withRequestHandler($requestHandler);
 
         $payload = SowisoApiPayload::createFromRequest($json);
 

@@ -16,7 +16,7 @@ class PlayHintEndpoint extends AbstractEndpoint
 {
     public const NAME = "play/hint";
 
-    protected function createRequest(
+    public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -24,7 +24,7 @@ class PlayHintEndpoint extends AbstractEndpoint
         return new PlayHintRequest($context, $payload, $data);
     }
 
-    protected function createResponse(
+    public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,

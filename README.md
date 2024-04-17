@@ -338,6 +338,105 @@ $api->useCallback(new class extends StoreAnswerCallback {
 });
 ```
 
+## RequestHandlers
+
+The SDK allows specifying request handlers for each endpoint. Every request handler provides a `handle` method to (optionally) implement. Its data contains the
+request data and possibly the context data. When the `handle` method returns any array, the request is not passed to the API. If the `handle` method does
+return `null`, the request is passed to the API. The SDK still runs all callback methods for the endpoint.
+
+When multiple request handlers for the same endpoint are used, only the latest is being used to handle the request.
+
+#### PlayExerciseSet
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends PlayExerciseSetRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayExerciseSetRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### PlayExercise
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends PlayExerciseRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayExerciseRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### ReplayExerciseTry
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends ReplayExerciseTryRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, ReplayExerciseTryRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### EvaluateAnswer
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends EvaluateAnswerRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, EvaluateAnswerRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### PlayHint
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends PlayHintRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayHintRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### PlaySolution
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends PlaySolutionRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlaySolutionRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### StoreAnswer
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends StoreAnswerRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, StoreAnswerRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
 ## Hooks
 
 The SDK provides so-called hooks, which _hook into_ one or more callbacks. They are used for providing some

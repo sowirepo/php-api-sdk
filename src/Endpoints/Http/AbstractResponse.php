@@ -19,4 +19,12 @@ abstract class AbstractResponse implements ResponseInterface
         protected RequestInterface $request,
     ) {
     }
+
+    /**
+     * @return array<string, mixed> $data
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
 }

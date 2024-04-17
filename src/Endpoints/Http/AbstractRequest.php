@@ -26,6 +26,14 @@ abstract class AbstractRequest implements RequestInterface
         return rawurlencode($value);
     }
 
+    /**
+     * @return array<string, mixed>|null $data
+     */
+    public function getData(): ?array
+    {
+        return $this->data;
+    }
+
     public function getMethod(): string
     {
         return 'GET';

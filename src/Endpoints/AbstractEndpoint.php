@@ -17,6 +17,7 @@ use Sowiso\SDK\Exceptions\FetchingFailedException;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
 use Sowiso\SDK\Exceptions\ResponseErrorException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
+use Sowiso\SDK\RequestHandlers\RequestHandlerInterface;
 use Sowiso\SDK\SowisoApiConfiguration;
 use Sowiso\SDK\SowisoApiContext;
 use Sowiso\SDK\SowisoApiPayload;
@@ -32,6 +33,9 @@ abstract class AbstractEndpoint implements EndpointInterface
     /** @var array<CallbackInterface<RequestInterface, ResponseInterface>> */
     protected array $callbacks;
 
+    /** @var RequestHandlerInterface<EndpointInterface, RequestInterface, ResponseInterface>|null */
+    protected ?RequestHandlerInterface $requestHandler;
+
     public function __construct()
     {
     }
@@ -46,45 +50,9 @@ abstract class AbstractEndpoint implements EndpointInterface
             $request = $this->createRequest($context, $payload, $data);
             $this->runCallbacks(fn (CallbackInterface $callback) => $callback->request($context, $payload, $request));
 
-            $uri = rtrim($this->configuration->getBaseUrl(), '/') . $request->getUri();
+            $response = $this->handleRequest($context, $payload, $request)
+                ?? $this->makeRequest($context, $payload, $request);
 
-            $httpRequest = $this->httpRequestFactory
-                ->createRequest($request->getMethod(), $uri)
-                ->withHeader(SowisoApiConfiguration::API_KEY_HEADER, $this->configuration->getApiKey());
-
-            if (null !== $body = $request->getBody()) {
-                $httpRequest = $httpRequest
-                    ->withHeader('Content-Type', 'application/json')
-                    ->withBody($this->httpStreamFactory->createStream($body));
-            }
-
-            $httpResponse = $this->httpClient->sendRequest($httpRequest);
-
-            $responseStatusCode = $httpResponse->getStatusCode();
-            $responseBody = (string) $httpResponse->getBody();
-
-            try {
-                $responseJson = $this->parseResponseJson($responseBody);
-            } catch (JsonException $e) {
-                throw new InvalidJsonResponseException($responseBody, $e);
-            }
-
-            if ($responseStatusCode !== 200) {
-                $responseErrorMessage = $responseJson['error'] ?? null;
-                $responseErrorMessage = is_string($responseErrorMessage) ? $responseErrorMessage : null;
-
-                if ($responseErrorMessage !== null) {
-                    throw new ResponseErrorException($responseErrorMessage, $responseStatusCode);
-                }
-
-                if ($responseBody !== '') {
-                    throw new InvalidJsonResponseException($responseBody);
-                }
-
-                throw new InvalidJsonResponseException('Unknown Server Error');
-            }
-
-            $response = $this->createResponse($context, $payload, $responseJson, $request);
             $this->runCallbacks(fn (CallbackInterface $callback) => $callback->response($context, $payload, $response));
         } catch (SowisoApiException|ClientExceptionInterface|Exception $e) {
             // @phpstan-ignore-next-line
@@ -99,7 +67,69 @@ abstract class AbstractEndpoint implements EndpointInterface
 
         $this->runCallbacks(fn (CallbackInterface $callback) => $callback->success($context, $payload, $request, $response));
 
-        return $responseJson;
+        return $response->getData();
+    }
+
+    private function handleRequest(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): ?ResponseInterface
+    {
+        if ($this->requestHandler === null) {
+            return null;
+        }
+
+        $response = $this->requestHandler->handleRequest($context, $payload, $this, $request);
+
+        if ($response === null) {
+            return null;
+        }
+
+        return $response;
+    }
+
+    /**
+     * @throws ClientExceptionInterface
+     * @throws SowisoApiException
+     */
+    private function makeRequest(SowisoApiContext $context, SowisoApiPayload $payload, RequestInterface $request): ResponseInterface
+    {
+        $uri = rtrim($this->configuration->getBaseUrl(), '/') . $request->getUri();
+
+        $httpRequest = $this->httpRequestFactory
+            ->createRequest($request->getMethod(), $uri)
+            ->withHeader(SowisoApiConfiguration::API_KEY_HEADER, $this->configuration->getApiKey());
+
+        if (null !== $body = $request->getBody()) {
+            $httpRequest = $httpRequest
+                ->withHeader('Content-Type', 'application/json')
+                ->withBody($this->httpStreamFactory->createStream($body));
+        }
+
+        $httpResponse = $this->httpClient->sendRequest($httpRequest);
+
+        $responseStatusCode = $httpResponse->getStatusCode();
+        $responseBody = (string) $httpResponse->getBody();
+
+        try {
+            $responseJson = $this->parseResponseJson($responseBody);
+        } catch (JsonException $e) {
+            throw new InvalidJsonResponseException($responseBody, $e);
+        }
+
+        if ($responseStatusCode !== 200) {
+            $responseErrorMessage = $responseJson['error'] ?? null;
+            $responseErrorMessage = is_string($responseErrorMessage) ? $responseErrorMessage : null;
+
+            if ($responseErrorMessage !== null) {
+                throw new ResponseErrorException($responseErrorMessage, $responseStatusCode);
+            }
+
+            if ($responseBody !== '') {
+                throw new InvalidJsonResponseException($responseBody);
+            }
+
+            throw new InvalidJsonResponseException('Unknown Server Error');
+        }
+
+        return $this->createResponse($context, $payload, $responseJson, $request);
     }
 
     /**
@@ -130,7 +160,7 @@ abstract class AbstractEndpoint implements EndpointInterface
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    abstract protected function createRequest(
+    abstract public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -140,7 +170,7 @@ abstract class AbstractEndpoint implements EndpointInterface
      * @param array<string, mixed> $data
      * @throws SowisoApiException
      */
-    abstract protected function createResponse(
+    abstract public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -181,6 +211,16 @@ abstract class AbstractEndpoint implements EndpointInterface
     public function withCallbacks(array $callbacks): self
     {
         $this->callbacks = $callbacks;
+
+        return $this;
+    }
+
+    /**
+     * @param RequestHandlerInterface<EndpointInterface, RequestInterface, ResponseInterface>|null $requestHandler
+     */
+    public function withRequestHandler(?RequestHandlerInterface $requestHandler): EndpointInterface
+    {
+        $this->requestHandler = $requestHandler;
 
         return $this;
     }

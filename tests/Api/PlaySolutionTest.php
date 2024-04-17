@@ -5,16 +5,21 @@ declare(strict_types=1);
 use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionRequest;
 use Sowiso\SDK\Api\PlaySolution\Http\PlaySolutionResponse;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionCallback;
+use Sowiso\SDK\Api\PlaySolution\PlaySolutionRequestHandler;
 use Sowiso\SDK\Exceptions\InvalidJsonResponseException;
+use Sowiso\SDK\SowisoApi;
+use Sowiso\SDK\SowisoApiContext;
+use Sowiso\SDK\SowisoApiPayload;
 use Sowiso\SDK\Tests\Fixtures\PlaySolution;
 
-it('makes request correctly', function (string $uri, array $request, mixed $response) {
+it('makes request correctly', function (string $uri, array $request, mixed $response, callable|null $useApi) {
     makesRequestCorrectly(
         method: 'GET',
         uri: $uri,
         request: $request,
         response: $response,
         context: context(),
+        useApi: $useApi,
     );
 })->with([
     'default' => [
@@ -27,9 +32,43 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlaySolution::RequestWithoutLanguage,
         PlaySolution::Response
     ],
+])->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlaySolutionRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlaySolutionRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
 ]);
 
-it('runs all callback methods correctly', function () {
+it('makes request correctly with request handler', function () {
+    makesRequestWithRequestHandlerCorrectly(
+        request: PlaySolution::Request,
+        callbackName: PlaySolutionCallback::class,
+        responseCaptor: function (PlaySolutionResponse $response) {
+            expect($response->getData()['random_value'])->toBe(12345);
+        },
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlaySolutionRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlaySolutionRequest $request): ?array
+                {
+                    $response = PlaySolution::Response;
+                    $response['random_value'] = 12345;
+
+                    return $response;
+                }
+            }
+        ),
+    );
+});
+
+it('runs all callback methods correctly', function (callable|null $useApi) {
     runsAllCallbackMethodsCorrectly(
         uri: PlaySolution::Uri,
         request: PlaySolution::Request,
@@ -46,8 +85,21 @@ it('runs all callback methods correctly', function () {
                 ->getScore()->toBe(PlaySolution::Response['score']);
         },
         context: context(),
+        useApi: $useApi,
     );
-});
+})->with([
+    'default' => [null],
+    'with empty request handler' => [
+        fn () => fn (SowisoApi $api) => $api->useRequestHandler(
+            new class () extends PlaySolutionRequestHandler {
+                public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlaySolutionRequest $request): ?array
+                {
+                    return null;
+                }
+            }
+        )
+    ],
+]);
 
 it('runs onFailure callback method correctly on missing data', function () {
     $request = PlaySolution::Request;

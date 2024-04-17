@@ -16,7 +16,7 @@ class PlayExerciseSetEndpoint extends AbstractEndpoint
 {
     public const NAME = "play/set";
 
-    protected function createRequest(
+    public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -24,7 +24,7 @@ class PlayExerciseSetEndpoint extends AbstractEndpoint
         return new PlayExerciseSetRequest($context, $payload, $data);
     }
 
-    protected function createResponse(
+    public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,

@@ -16,7 +16,7 @@ class PlayExerciseEndpoint extends AbstractEndpoint
 {
     public const NAME = "play/exercise";
 
-    protected function createRequest(
+    public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -24,7 +24,7 @@ class PlayExerciseEndpoint extends AbstractEndpoint
         return new PlayExerciseRequest($context, $payload, $data);
     }
 
-    protected function createResponse(
+    public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,

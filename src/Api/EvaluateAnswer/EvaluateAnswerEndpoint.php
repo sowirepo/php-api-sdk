@@ -16,7 +16,7 @@ class EvaluateAnswerEndpoint extends AbstractEndpoint
 {
     public const NAME = "evaluate/answer";
 
-    protected function createRequest(
+    public function createRequest(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
@@ -24,7 +24,7 @@ class EvaluateAnswerEndpoint extends AbstractEndpoint
         return new EvaluateAnswerRequest($context, $payload, $data);
     }
 
-    protected function createResponse(
+    public function createResponse(
         SowisoApiContext $context,
         SowisoApiPayload $payload,
         array $data,
