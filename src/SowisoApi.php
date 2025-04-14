@@ -17,6 +17,7 @@ use Sowiso\SDK\Api\PlayExercise\PlayExerciseEndpoint;
 use Sowiso\SDK\Api\PlayExerciseSet\PlayExerciseSetEndpoint;
 use Sowiso\SDK\Api\PlayHint\PlayHintEndpoint;
 use Sowiso\SDK\Api\PlaySolution\PlaySolutionEndpoint;
+use Sowiso\SDK\Api\PlayTheory\PlayTheoryEndpoint;
 use Sowiso\SDK\Api\ReplayExerciseTry\ReplayExerciseTryEndpoint;
 use Sowiso\SDK\Api\StoreAnswer\StoreAnswerEndpoint;
 use Sowiso\SDK\Callbacks\CallbackInterface;
@@ -54,6 +55,7 @@ class SowisoApi
         ReplayExerciseTryEndpoint::NAME => ReplayExerciseTryEndpoint::class,
         PlayHintEndpoint::NAME => PlayHintEndpoint::class,
         PlaySolutionEndpoint::NAME => PlaySolutionEndpoint::class,
+        PlayTheoryEndpoint::NAME => PlayTheoryEndpoint::class,
         StoreAnswerEndpoint::NAME => StoreAnswerEndpoint::class,
     ];
 
@@ -197,7 +199,7 @@ class SowisoApi
      */
     private function resolveEndpoint(array $json): EndpointInterface
     {
-        if (null === $name = $json[SowisoApiConfiguration::ENDPOINT_IDENTIFIER] ?? null) {
+        if (null === $name = $json[SowisoApiConfiguration::ENDPOINT_IDENTIFIER ] ?? null) {
             throw new NoEndpointException();
         }
 
