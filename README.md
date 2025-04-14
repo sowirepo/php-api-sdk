@@ -338,6 +338,19 @@ $api->useCallback(new class extends StoreAnswerCallback {
 });
 ```
 
+#### PlayTheory
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useCallback(new class extends PlayTheoryCallback {
+    public function onRequest(PlayTheoryOnRequestData $data): void {}
+    public function onResponse(PlayTheoryOnResponseData $data): void {}
+    public function onSuccess(PlayTheoryrOnSuccessData $data): void {}
+    public function onFailure(PlayTheoryOnFailureData $data): void {}
+});
+```
+
 ## RequestHandlers
 
 The SDK allows specifying request handlers for each endpoint. Every request handler provides a `handle` method to (optionally) implement. Its data contains the
@@ -431,6 +444,19 @@ $api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is 
 
 $api->useRequestHandler(new class extends StoreAnswerRequestHandler {
     public function handle(SowisoApiContext $context, SowisoApiPayload $payload, StoreAnswerRequest $request): ?array
+    {
+        return null; // Or whatever should be the response
+    }
+});
+```
+
+#### PlayTheory
+
+```php
+$api = new SowisoApi(SowisoApiConfiguration::create()); // The configuration is needed here
+
+$api->useRequestHandler(new class extends PlayTheoryRequestHandler {
+    public function handle(SowisoApiContext $context, SowisoApiPayload $payload, PlayTheoryRequest $request): ?array
     {
         return null; // Or whatever should be the response
     }
