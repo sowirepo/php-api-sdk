@@ -6,6 +6,7 @@ namespace Sowiso\SDK\Api\PlayTheory\Http;
 
 use Sowiso\SDK\Endpoints\Http\AbstractRequest;
 use Sowiso\SDK\Exceptions\MissingDataException;
+use Sowiso\SDK\Exceptions\NoUserException;
 use Sowiso\SDK\Exceptions\SowisoApiException;
 use Sowiso\SDK\SowisoApiContext;
 use Sowiso\SDK\SowisoApiPayload;
@@ -13,6 +14,8 @@ use Sowiso\SDK\SowisoApiPayload;
 class PlayTheoryRequest extends AbstractRequest
 {
     private ?string $language;
+
+    private string $user;
 
     private int $theoryId;
 
@@ -23,6 +26,12 @@ class PlayTheoryRequest extends AbstractRequest
     public function __construct(SowisoApiContext $context, SowisoApiPayload $payload, array $data)
     {
         parent::__construct($context, $payload, $data);
+
+        if (null === ($user = $context->getUser()) || trim($user) === '') {
+            throw new NoUserException();
+        }
+
+        $this->user = $user;
 
         $language = is_string($language = $data['lang'] ?? null) ? $language : null;
 
@@ -44,7 +53,7 @@ class PlayTheoryRequest extends AbstractRequest
             $uri .= sprintf('/lang/%s', $this->language);
         }
 
-        $uri .= '/user_id/1';
+        $uri .= sprintf('/username/%s', self::encodeForUrl($this->user));
 
         return $uri;
     }
