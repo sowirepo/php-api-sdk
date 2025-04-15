@@ -199,7 +199,7 @@ class SowisoApi
      */
     private function resolveEndpoint(array $json): EndpointInterface
     {
-        if (null === $name = $json[SowisoApiConfiguration::ENDPOINT_IDENTIFIER ] ?? null) {
+        if (null === $name = $json[SowisoApiConfiguration::ENDPOINT_IDENTIFIER] ?? null) {
             throw new NoEndpointException();
         }
 
