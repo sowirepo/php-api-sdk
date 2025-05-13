@@ -153,6 +153,7 @@ At the moment, the following endpoints are available in the SDK:
     - `set_id` (Integer) **OR** `try_id` (Integer)
     - `lang` (String) [optional]
     - `view` (String) (`student|readonly`) [optional, default=student]
+    - `mode` (String) (`practice|print`) [optional, default=practice]
 - **Response fields**:
     - `{exercise_id, try_id}[]` (`ExerciseTry[]`)
 - **Required context fields**:
@@ -161,8 +162,15 @@ At the moment, the following endpoints are available in the SDK:
 _When the requested view is set to `readonly`, no "Try IDs" are returned for the exercises in that set.
 Hence, the corresponding hooks that handle "Try IDs" are not called._
 
-_When a request contains a `try_id` instead of a `set_id`, the API _continues_ the exercise set that belongs to that `try_id`.
-Providing both fields is not allowed and results in an `InvalidDataException`._
+_When a request contains a `try_id` instead of a `set_id`, the `mode` makes a difference to the API response:_
+
+- _`mode=practice` - the exercise set that belongs to that `try_id` is being **continued**_
+- _`mode=print` - the exercise set that belongs to that `try_id` is being **restarted** from
+  the first exercise of the set_
+- _`mode=test` - the exercise set that belongs to that `try_id` is being **restarted** from
+  the first exercise of the set (can only be enabled via the `TestMode` hook)_
+
+_Providing both the `try_id` and `set_id` fields is not allowed and results in an `InvalidDataException`._
 
 #### PlayExercise
 
