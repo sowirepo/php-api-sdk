@@ -71,6 +71,16 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         PlayExerciseSet::RequestWithTryIdWithoutLanguage,
         PlayExerciseSet::ResponseWithTryId,
     ],
+    'with try_id with explicit practice mode' => [
+        PlayExerciseSet::UriWithTryId,
+        PlayExerciseSet::RequestWithTryIdAndPracticeMode,
+        PlayExerciseSet::ResponseWithTryId,
+    ],
+    'with try_id with print mode' => [
+        PlayExerciseSet::UriWithTryIdInPrintMode,
+        PlayExerciseSet::RequestWithTryIdAndPrintMode,
+        PlayExerciseSet::ResponseWithTryId,
+    ],
 ])->with([
     'default' => [null],
     'with empty request handler' => [
@@ -149,6 +159,32 @@ it('makes request with try_id correctly in "test" mode', function () {
             public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
             {
                 return true;
+            }
+
+            public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool
+            {
+                return false; // Not needed in the PlayExerciseSetEndpoint
+            }
+        }),
+    );
+});
+
+it('makes request with try_id correctly in "print" mode with disabled "test" mode', function () {
+    makesRequestCorrectly(
+        method: 'GET',
+        uri: PlayExerciseSet::UriWithTryIdInPrintMode,
+        request: PlayExerciseSet::RequestWithTryIdAndPrintMode,
+        response: PlayExerciseSet::ResponseWithTryId,
+        context: contextWithUsername(),
+        useApi: fn (SowisoApi $api) => $api->useHook(new class () extends TestModeHook {
+            public function shouldExerciseSetBePlayedInTestMode(ShouldExerciseSetBePlayedInTestModeData $data): bool
+            {
+                return false; // Not needed for request with try_id
+            }
+
+            public function shouldExerciseTryBePlayedInTestMode(ShouldExerciseTryBePlayedInTestModeData $data): bool
+            {
+                return false;
             }
 
             public function shouldExerciseTryBeEvaluatedInTestMode(ShouldExerciseTryBeEvaluatedInTestModeData $data): bool
@@ -309,6 +345,22 @@ it('fails on invalid request with set_id and try_id', function () {
     failsOnInvalidData(
         request: PlayExerciseSet::RequestWithSetIdAndTryId,
         message: "InvalidData 'setId and tryId supplied'",
+        context: contextWithUsername(),
+    );
+});
+
+it('fails on invalid request with explicit "test" mode', function () {
+    failsOnInvalidData(
+        request: PlayExerciseSet::RequestWithTryIdAndTestMode,
+        message: "InvalidData 'mode=test supplied, use TestModeHook instead'",
+        context: contextWithUsername(),
+    );
+});
+
+it('fails on invalid request with set_id and try_id and explicit "test" mode', function () {
+    failsOnInvalidData(
+        request: PlayExerciseSet::RequestWithSetIdAndTryIdAndTestMode,
+        message: "InvalidData 'mode=test supplied, use TestModeHook instead'",
         context: contextWithUsername(),
     );
 });

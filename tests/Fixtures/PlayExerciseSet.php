@@ -27,6 +27,8 @@ class PlayExerciseSet
 
     public const UriWithTryIdInTestMode = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/mode/test_strict/single_exercise/true/arrays/true/payload/true';
 
+    public const UriWithTryIdInPrintMode = '/api/play/set/try_id/12345/username/user1/lang/en/view/student/single_exercise/true/arrays/true/payload/true';
+
     public const Request = [
         '__endpoint' => PlayExerciseSetEndpoint::NAME,
         'view' => 'student',
@@ -99,6 +101,39 @@ class PlayExerciseSet
         'lang' => 'en',
         'set_id' => 234,
         'try_id' => 12345,
+    ];
+
+    public const RequestWithSetIdAndTryIdAndTestMode = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'set_id' => 234,
+        'try_id' => 12345,
+        'mode' => 'test',
+    ];
+
+    public const RequestWithTryIdAndPracticeMode = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'try_id' => 12345,
+        'mode' => 'practice',
+    ];
+
+    public const RequestWithTryIdAndPrintMode = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'try_id' => 12345,
+        'mode' => 'print',
+    ];
+
+    public const RequestWithTryIdAndTestMode = [
+        '__endpoint' => PlayExerciseSetEndpoint::NAME,
+        'view' => 'student',
+        'lang' => 'en',
+        'try_id' => 12345,
+        'mode' => 'test',
     ];
 
     public const Response = [

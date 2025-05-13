@@ -19,6 +19,7 @@ class PlayExerciseSetRequest extends AbstractRequest
     private const VIEW_READONLY_RESTRICTED = 'readonly-restricted';
     private const MODE_PRACTICE = 'practice';
     private const MODE_TEST = 'test';
+    private const MODE_PRINT = 'print';
 
     private string $user;
 
@@ -46,9 +47,14 @@ class PlayExerciseSetRequest extends AbstractRequest
 
         $language = is_string($language = $data['lang'] ?? null) ? $language : null;
         $view = is_string($view = $data['view'] ?? null) ? $view : null;
+        $mode = is_string($mode = $data['mode'] ?? null) ? $mode : null;
 
         $setId = is_int($setId = $data['set_id'] ?? null) ? $setId : null;
         $tryId = is_int($tryId = $data['try_id'] ?? null) ? $tryId : null;
+
+        if ($mode === self::MODE_TEST) {
+            throw InvalidDataException::create('mode=test supplied, use TestModeHook instead');
+        }
 
         if ($tryId === null && $setId === null) {
             throw MissingDataException::create(self::class, 'setId');
@@ -61,7 +67,7 @@ class PlayExerciseSetRequest extends AbstractRequest
         $this->user = $user;
         $this->language = $language;
         $this->view = $this->validatedView($view);
-        $this->mode = null;
+        $this->mode = $this->validatedMode($mode);
         $this->setId = $setId;
         $this->tryId = $tryId;
     }
@@ -88,7 +94,13 @@ class PlayExerciseSetRequest extends AbstractRequest
             $uri .= '/mode/test_strict';
         }
 
-        if ($this->mode === self::MODE_TEST && $this->usesTryId()) {
+        $singleExerciseMode = $this->usesTryId()
+            && in_array($this->mode, [
+                self::MODE_TEST,
+                self::MODE_PRINT,
+            ], strict: true);
+
+        if ($singleExerciseMode) {
             $uri .= '/single_exercise/true';
         }
 
@@ -130,7 +142,13 @@ class PlayExerciseSetRequest extends AbstractRequest
 
     public function setTestMode(bool $testMode = true): void
     {
-        $this->mode = $testMode ? self::MODE_TEST : null;
+        // When the "test" mode is being deactivated even though not activated before, do nothing.
+
+        if ($testMode) {
+            $this->mode = self::MODE_TEST;
+        } else {
+            $this->mode = ($this->mode === self::MODE_TEST) ? null : $this->mode;
+        }
     }
 
     public function usesAnyReadonlyView(): bool
@@ -156,5 +174,19 @@ class PlayExerciseSetRequest extends AbstractRequest
         }
 
         return self::VIEW_STUDENT;
+    }
+
+    protected function validatedMode(?string $value): ?string
+    {
+        $isValid = in_array($value, [
+            self::MODE_PRACTICE,
+            self::MODE_PRINT,
+        ], strict: true);
+
+        if ($isValid) {
+            return $value;
+        }
+
+        return self::MODE_PRACTICE;
     }
 }
