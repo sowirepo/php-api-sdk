@@ -23,5 +23,19 @@ class ReplayExerciseTry
         'try_id' => 12345,
     ];
 
+    public const RequestWithQuestionMode = [
+        '__endpoint' => ReplayExerciseTryEndpoint::NAME,
+        'try_id' => 12345,
+        'lang' => 'en',
+        'mode' => 'question',
+    ];
+
+    public const RequestWithInvalidMode = [
+        '__endpoint' => ReplayExerciseTryEndpoint::NAME,
+        'try_id' => 12345,
+        'lang' => 'en',
+        'mode' => 'INVALID',
+    ];
+
     public const Response = [];
 }
