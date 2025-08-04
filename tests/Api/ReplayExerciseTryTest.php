@@ -89,7 +89,7 @@ it('runs all callback methods correctly', function (callable|null $useApi) {
                 ->getTryId()->toBe(ReplayExerciseTry::Request['try_id'])
                 ->getLanguage()->toBe(ReplayExerciseTry::Request['lang'])
                 ->getMode()->toBe('full')
-                ->usesQuestionView()->toBe(false);
+                ->usesQuestionsMode()->toBe(false);
         },
         responseCaptor: function (ReplayExerciseTryResponse $response) {
         },
@@ -121,7 +121,7 @@ it('runs all callback methods in question mode correctly', function () {
                 ->getTryId()->toBe(ReplayExerciseTry::RequestWithQuestionMode['try_id'])
                 ->getLanguage()->toBe(ReplayExerciseTry::RequestWithQuestionMode['lang'])
                 ->getMode()->toBe('question')
-                ->usesQuestionView()->toBe(true);
+                ->usesQuestionsMode()->toBe(true);
         },
         responseCaptor: function (ReplayExerciseTryResponse $response) {
         },

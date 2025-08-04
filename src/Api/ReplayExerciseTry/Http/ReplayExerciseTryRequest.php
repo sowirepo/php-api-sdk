@@ -73,7 +73,7 @@ class ReplayExerciseTryRequest extends AbstractRequest
         return $this->mode ?? self::MODE_FULL;
     }
 
-    public function usesQuestionView(): bool
+    public function usesQuestionsMode(): bool
     {
         return $this->getMode() === self::MODE_QUESTION;
     }
