@@ -32,6 +32,16 @@ it('makes request correctly', function (string $uri, array $request, mixed $resp
         ReplayExerciseTry::RequestWithoutLanguage,
         ReplayExerciseTry::Response
     ],
+    'with question mode' => [
+        ReplayExerciseTry::Uri,
+        ReplayExerciseTry::RequestWithQuestionMode,
+        ReplayExerciseTry::Response,
+    ],
+    'with invalid mode' => [
+        ReplayExerciseTry::Uri,
+        ReplayExerciseTry::RequestWithInvalidMode,
+        ReplayExerciseTry::Response,
+    ],
 ])->with([
     'default' => [null],
     'with empty request handler' => [
@@ -76,8 +86,10 @@ it('runs all callback methods correctly', function (callable|null $useApi) {
         callbackName: ReplayExerciseTryCallback::class,
         requestCaptor: function (ReplayExerciseTryRequest $request) {
             expect($request)
+                ->getTryId()->toBe(ReplayExerciseTry::Request['try_id'])
                 ->getLanguage()->toBe(ReplayExerciseTry::Request['lang'])
-                ->getTryId()->toBe(ReplayExerciseTry::Request['try_id']);
+                ->getMode()->toBe('full')
+                ->usesQuestionsMode()->toBe(false);
         },
         responseCaptor: function (ReplayExerciseTryResponse $response) {
         },
@@ -97,6 +109,25 @@ it('runs all callback methods correctly', function (callable|null $useApi) {
         )
     ],
 ]);
+
+it('runs all callback methods in question mode correctly', function () {
+    runsAllCallbackMethodsCorrectly(
+        uri: ReplayExerciseTry::Uri,
+        request: ReplayExerciseTry::RequestWithQuestionMode,
+        response: ReplayExerciseTry::Response,
+        callbackName: ReplayExerciseTryCallback::class,
+        requestCaptor: function (ReplayExerciseTryRequest $request) {
+            expect($request)
+                ->getTryId()->toBe(ReplayExerciseTry::RequestWithQuestionMode['try_id'])
+                ->getLanguage()->toBe(ReplayExerciseTry::RequestWithQuestionMode['lang'])
+                ->getMode()->toBe('question')
+                ->usesQuestionsMode()->toBe(true);
+        },
+        responseCaptor: function (ReplayExerciseTryResponse $response) {
+        },
+        context: context(),
+    );
+});
 
 it('runs onFailure callback method correctly on missing data', function () {
     $request = ReplayExerciseTry::Request;

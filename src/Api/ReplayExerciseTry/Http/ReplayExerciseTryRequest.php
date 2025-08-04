@@ -12,9 +12,14 @@ use Sowiso\SDK\SowisoApiPayload;
 
 class ReplayExerciseTryRequest extends AbstractRequest
 {
-    private ?string $language;
+    private const MODE_FULL = 'full';
+    private const MODE_QUESTION = 'question';
 
     private int $tryId;
+
+    private ?string $language;
+
+    private ?string $mode;
 
     /**
      * @param array<string, mixed> $data
@@ -24,14 +29,16 @@ class ReplayExerciseTryRequest extends AbstractRequest
     {
         parent::__construct($context, $payload, $data);
 
-        $language = is_string($language = $data['lang'] ?? null) ? $language : null;
-
         if (null === ($tryId = $data['try_id'] ?? null) || !is_int($tryId)) {
             throw MissingDataException::create(self::class, 'tryId');
         }
 
+        $language = is_string($language = $data['lang'] ?? null) ? $language : null;
+        $mode = is_string($mode = $data['mode'] ?? null) ? $mode : null;
+
         $this->language = $language;
         $this->tryId = $tryId;
+        $this->mode = $this->validatedMode($mode);
     }
 
     public function getUri(): string
@@ -44,9 +51,16 @@ class ReplayExerciseTryRequest extends AbstractRequest
             $uri .= sprintf('/lang/%s', $this->language);
         }
 
+        // We don't send the mode to the API, yet. We only need it for the hooks as of now.
+
         $uri .= '/arrays/true';
 
         return $uri;
+    }
+
+    public function getTryId(): int
+    {
+        return $this->tryId;
     }
 
     public function getLanguage(): ?string
@@ -54,8 +68,27 @@ class ReplayExerciseTryRequest extends AbstractRequest
         return $this->language;
     }
 
-    public function getTryId(): int
+    public function getMode(): string
     {
-        return $this->tryId;
+        return $this->mode ?? self::MODE_FULL;
+    }
+
+    public function usesQuestionsMode(): bool
+    {
+        return $this->getMode() === self::MODE_QUESTION;
+    }
+
+    protected function validatedMode(?string $value): ?string
+    {
+        $isValid = in_array($value, [
+            self::MODE_FULL,
+            self::MODE_QUESTION,
+        ], strict: true);
+
+        if ($isValid) {
+            return $value;
+        }
+
+        return self::MODE_FULL;
     }
 }
